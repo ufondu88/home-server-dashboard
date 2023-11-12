@@ -28,11 +28,12 @@ export class ProxmoxService extends ProxmoxHttp {
 
   findAll() {
     return this.getAllNodes().pipe(
-      switchMap((nodes: NodeInfo[]) => {
+      switchMap(nodes => {
         this.nodes = nodes;
 
         const vms$: Observable<VirtualMachine[]>[] = []
         const containers$: Observable<LXCContainer[]>[] = []
+
 
         nodes.forEach(node => {
           const nodeName = node.node
@@ -61,7 +62,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodeName}/lxc`
 
-    return this.get(url).pipe(
+    return this.get(url)!.pipe(
       tap((containers: LXCContainer[]) => this.containers = containers)
     )
   }
@@ -71,7 +72,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodeName}/qemu`
 
-    return this.get(url).pipe(
+    return this.get(url)!.pipe(
       tap((vms: VirtualMachine[]) => this.vms = vms)
     )
   }
@@ -81,7 +82,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes`
 
-    return this.get(url).pipe(
+    return this.get(url)!.pipe(
       map((nodes: NodeInfo[]) => {
         nodes.forEach(node => {
           node.cpu = +(node.cpu * 100).toFixed(2)
@@ -97,7 +98,23 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodeName}/storage`
 
-    return this.get(url)
+    return this.get(url)!
+  }
+
+  getNodeVMs(nodeName: string) {
+    this.logger.log(`Getting VM info for node ${nodeName}`)
+
+    const url = `${this.domain}/nodes/${nodeName}/qemu`
+
+    return this.get(url)!
+  }
+
+  getNodeContainers(nodeName: string) {
+    this.logger.log(`Getting container info for node ${nodeName}`)
+
+    const url = `${this.domain}/nodes/${nodeName}/lxc`
+
+    return this.get(url)!
   }
 
   findOne(id: number) {

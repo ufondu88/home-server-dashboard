@@ -27,6 +27,16 @@ export class ProxmoxController {
     return this.proxmoxService.getNodeStorage(node);
   }
 
+  @Get('node/containers')
+  getNodeContainers(@Query('node') node: string) {
+    return this.proxmoxService.getNodeContainers(node);
+  }
+
+  @Get('node/vms')
+  getNodeVMs(@Query('node') node: string) {
+    return this.proxmoxService.getNodeVMs(node);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.proxmoxService.findOne(+id);
