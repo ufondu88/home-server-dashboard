@@ -1,0 +1,75 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Blank
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Blank</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    <div class="row">
+      <div class="col text-right">
+        <ion-button (click)="openFormModal()">Add new app</ion-button>
+      </div>
+    </div>
+    <div class="row">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title (click)="goToApp(proxmoxUrl)">Proxmox</ion-card-title>
+          <ion-card-subtitle>Proxmox</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+          Number of nodes: {{proxmoxInfo.nodes.length}}
+
+          <ion-accordion-group *ngIf="proxmoxInfo.nodes.length > 0">
+            <ion-accordion *ngFor="let node of proxmoxInfo.nodes" value="{{node.node}}">
+              <ion-item slot="header" color="light">
+                <ion-label>{{node.node}}</ion-label>
+              </ion-item>
+              <div class="ion-padding" slot="content">
+                <ion-chip color="{{node.status == 'online' ? 'success' : 'danger'}}">{{node.status}}</ion-chip>
+                <ion-chip>{{node.uptime | convertSeconds}}</ion-chip>
+              </div>
+              <div class="ion-padding" slot="content">
+                <app-server-stats [node]="node"></app-server-stats>
+              </div>
+            </ion-accordion>
+          </ion-accordion-group>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+
+
+    <div class="row" *ngIf="allApps.length; else noApps">
+      <div class="col-sm-12 col-md-4" *ngFor="let app of allApps">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title (click)="goToApp(app.full_url)">{{app.name}}</ion-card-title>
+            <ion-card-subtitle>{{app.friendly_name}}</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            Here's a small text description for the card content. Nothing more, nothing less.
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+
+    <ng-template #noApps>
+      <div class="col text-right">
+        <ion-button (click)="openFormModal()">Add new app</ion-button>
+      </div>
+    </ng-template>
+
+
+  </div>
+</ion-content>

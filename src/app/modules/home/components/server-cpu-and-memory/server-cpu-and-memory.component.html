@@ -1,0 +1,42 @@
+<div class="grid">
+  <app-card class="merge-row" [title]="'Server CPU'">
+    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
+      {{node.cpu}} %
+    </h1>
+  </app-card>
+  
+  <app-card class="top-card" [title]="'Total Memory'">
+    <h1 [style.font-weight]="'bold'">
+      {{node.maxmem | convertBytes}}
+    </h1>
+  </app-card>
+  <app-card class="top-card" [title]="'Memory Usage'">
+    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
+      {{node.mem | convertBytes}}
+    </h1>
+  </app-card>
+
+  <app-card class="top-card" [title]="'Memory Usage'">
+    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
+      {{node.mem | convertBytes}}
+    </h1>
+  </app-card>
+
+  <app-card class="bottom-card" [title]="'Memory Usage'">
+    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
+      1
+    </h1>
+  </app-card>
+
+  <app-card class="bottom-card" [title]="'Memory Usage'">
+    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
+      2
+    </h1>
+  </app-card>
+
+  <app-card class="bottom-card" [title]="'Memory Usage'">
+    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
+      3
+    </h1>
+  </app-card>
+</div>

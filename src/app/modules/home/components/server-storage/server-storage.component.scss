@@ -1,0 +1,24 @@
+#progress-container {
+  width: 100%;
+}
+
+#storage-container {
+  display: flex;
+  margin-bottom: 8px;
+  align-items: center;
+
+  .storage-name {
+    width: 25%;
+  }
+
+  .storage-used {
+    width: 10%;
+    font-size: 14pt;
+  }
+
+  app-progress-bar {
+    width: 60%;
+    margin-right: 10px;
+    height: 100%;
+  }
+}

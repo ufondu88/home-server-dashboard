@@ -5,7 +5,7 @@ import { UpdateProxmoxDto } from './dto/update-proxmox.dto';
 
 @Controller('proxmox')
 export class ProxmoxController {
-  constructor(private readonly proxmoxService: ProxmoxService) {}
+  constructor(private readonly proxmoxService: ProxmoxService) { }
 
   @Post()
   create(@Body() createProxmoxDto: CreateProxmoxDto) {
@@ -20,6 +20,11 @@ export class ProxmoxController {
   @Get('containers')
   getAllContainers(@Query('node') node: string) {
     return this.proxmoxService.getAllContainers(node);
+  }
+
+  @Get('node/storage')
+  getNodeStorage(@Query('node') node: string) {
+    return this.proxmoxService.getNodeStorage(node);
   }
 
   @Get(':id')

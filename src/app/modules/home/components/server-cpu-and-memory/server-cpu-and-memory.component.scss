@@ -1,0 +1,24 @@
+.grid {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-template-rows: auto auto;
+  height: fit-content;
+
+  app-card {
+    margin-right: 5px;
+  }
+  
+  .top-card {
+    height: fit-content;
+    margin-bottom: 2px;
+  }
+
+  .bottom-card {
+    height: fit-content;
+    margin-top: 2px;
+  }
+
+  .merge-row {
+    grid-row: 1 / span 2;
+  }
+}

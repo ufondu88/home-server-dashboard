@@ -1,0 +1,19 @@
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <app-server-cpu-and-memory [node]="node"></app-server-cpu-and-memory>
+    </ion-col>
+    <ion-col>
+      <app-server-storage [storage]="storageInfo"></app-server-storage>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <app-running-vms [VMs]="VMs"></app-running-vms>
+    </ion-col>
+    <ion-col>
+      <app-running-containers [containers]="containers"></app-running-containers>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+

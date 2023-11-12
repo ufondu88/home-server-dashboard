@@ -6,6 +6,7 @@ import { DashboardAppFormModalComponent } from './modals/dashboard-app-form-moda
 import { DashboardApp } from 'interfaces/dashboard-service.interface';
 import { ProxmoxService } from './proxmox.service';
 import { ProxmoxInfo } from 'interfaces/proxmox-info.interface';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -28,7 +29,7 @@ export class HomePage {
 
   ngOnInit() { 
     this.dashboarAppService.ALL_APPS.subscribe(res => this.allApps = res)
-    this.proxmoxService.PROXMOX_INFO.subscribe(res => this.proxmoxInfo = res)
+    this.proxmoxService.PROXMOX_INFO.pipe(tap(console.log)).subscribe(res => this.proxmoxInfo = res)
   }
 
   async openFormModal() {

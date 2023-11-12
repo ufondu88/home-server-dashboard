@@ -1,0 +1,14 @@
+<app-card [title]="'Running LXCs'">
+  <table>
+    <tr>
+      <th>Allocated Disk Space</th>
+      <th>VM</th>
+      <th>Uptime</th>
+    </tr>
+    <tr *ngFor="let container of containers">
+      <td>{{container.maxdisk | convertBytes}}</td>
+      <td>{{container.name}}</td>
+      <td>{{container.uptime | convertSeconds:'vm'}}</td>
+    </tr>
+  </table>
+</app-card>

@@ -1,0 +1,14 @@
+<app-card [title]="'Running VMs'">
+  <table>
+    <tr>
+      <th>Allocated Disk Space</th>
+      <th>VM</th>
+      <th>Uptime</th>
+    </tr>
+    <tr *ngFor="let vm of VMs">
+      <td>{{vm.maxdisk | convertBytes}}</td>
+      <td>{{vm.name}}</td>
+      <td>{{vm.uptime | convertSeconds:'vm'}}</td>
+    </tr>
+  </table>
+</app-card>
