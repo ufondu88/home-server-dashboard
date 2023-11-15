@@ -1,14 +1,20 @@
 <app-card [title]="'Running VMs'">
   <table>
     <tr>
-      <th>Allocated Disk Space</th>
-      <th>VM</th>
-      <th>Uptime</th>
+      <th (click)="sort('maxdisk')">Allocated Disk Space <ion-icon name="funnel-outline"></ion-icon></th>
+      <th (click)="sort('name')">VM <ion-icon name="funnel-outline"></ion-icon></th>
+      <th (click)="sort('uptime')">Uptime <ion-icon name="funnel-outline"></ion-icon></th>
+      <th (click)="sort('status')">Status <ion-icon name="funnel-outline"></ion-icon></th>
     </tr>
-    <tr *ngFor="let vm of VMs">
+    <tr *ngFor="let vm of VMs; trackBy: trackVMs">
       <td>{{vm.maxdisk | convertBytes}}</td>
       <td>{{vm.name}}</td>
-      <td>{{vm.uptime | convertSeconds:'vm'}}</td>
+      <!-- <td>{{vm.uptime | convertSeconds:'vm'}}</td> -->
+      <td>{{vm.convertedUptime}}</td>
+      <td class="status">
+        <span [style.color]="vm.status == 'running' ? '#74BF6B' : '#D34039'">{{vm.status}}</span>
+        <ion-icon (click)="toggleVM(vm)" name="{{vm.status === 'running' ? 'stop' : 'play'}}"></ion-icon>
+      </td>
     </tr>
   </table>
-</app-card>
+</app-card> 

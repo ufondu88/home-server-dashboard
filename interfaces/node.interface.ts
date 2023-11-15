@@ -1,5 +1,6 @@
 export interface NodeInfo {
   uptime: number;
+  convertedUptime: string;
   maxcpu: number;
   type: string;
   node: string;

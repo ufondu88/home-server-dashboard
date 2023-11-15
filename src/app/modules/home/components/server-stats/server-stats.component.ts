@@ -1,9 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NodeInfo } from 'interfaces/node.interface';
-import { ProxmoxService } from '../../proxmox.service';
-import { NodeStorage } from 'interfaces/node-storage.interface';
-import { VirtualMachine } from 'interfaces/vm.interface';
-import { LXCContainer } from 'interfaces/container.interface';
 
 @Component({
   selector: 'app-server-stats',
@@ -12,22 +8,12 @@ import { LXCContainer } from 'interfaces/container.interface';
 })
 export class ServerStatsComponent implements OnInit {
   @Input() node: NodeInfo
-  storageInfo: NodeStorage[] = []
-  VMs: VirtualMachine[] = []
-  containers: LXCContainer[] = []
+  nodeName: string
 
-  constructor(private proxmoxService: ProxmoxService) {    
-  }
+  constructor() {}
   
   ngOnInit() {    
-    this.proxmoxService.getNodeStorage(this.node.node).subscribe(res => {
-      this.storageInfo = res      
-    })
-
-    this.proxmoxService.getNodeVMs(this.node.node).subscribe(res => this.VMs = res)
-
-    this.proxmoxService.getNodeContainers(this.node.node).subscribe(res => this.containers = res)
-
+    this.nodeName = this.node.node
   }
 
 }

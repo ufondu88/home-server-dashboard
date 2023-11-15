@@ -4,15 +4,15 @@
       <app-server-cpu-and-memory [node]="node"></app-server-cpu-and-memory>
     </ion-col>
     <ion-col>
-      <app-server-storage [storage]="storageInfo"></app-server-storage>
+      <app-server-storage [nodeName]="nodeName"></app-server-storage>
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
-      <app-running-vms [VMs]="VMs"></app-running-vms>
+      <app-running-vms [nodeName]="nodeName"></app-running-vms>
     </ion-col>
     <ion-col>
-      <app-running-containers [containers]="containers"></app-running-containers>
+      <app-running-containers [nodeName]="nodeName"></app-running-containers>
     </ion-col>
   </ion-row>
 </ion-grid>

@@ -1,5 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { NodeStorage } from 'interfaces/node-storage.interface';
+import { sorted } from '../../functions/sort.function';
+import { map } from 'rxjs';
+import { ProxmoxService } from '../../proxmox.service';
 
 @Component({
   selector: 'app-server-storage',
@@ -7,27 +10,22 @@ import { NodeStorage } from 'interfaces/node-storage.interface';
   styleUrls: ['./server-storage.component.scss'],
 })
 export class ServerStorageComponent  implements OnInit {
-  @Input() storage: NodeStorage[]
+  @Input() nodeName: string
+  storage: NodeStorage[]
+  sortAscending = true
+  proxmoxService = inject(ProxmoxService)
 
   constructor() { }
 
-  ngOnInit() { }
-  
-  sortedStorage() {
-    return this.storage.sort((a, b) => {
-      const nameA = a.storage.toUpperCase(); // ignore upper and lowercase
-      const nameB = b.storage.toUpperCase(); // ignore upper and lowercase
+  ngOnInit() {
+    this.proxmoxService.STORAGES.pipe(
+      map(res => res[this.nodeName])
+    ).subscribe(storage => {
+      this.storage = storage ? sorted(storage, 'storage') : []
+    })
+  }
 
-      if (nameA < nameB) {
-        return -1;
-      }
-
-      if (nameA > nameB) {
-        return 1;
-      }
-
-      // names must be equal
-      return 0;
-    });
+  trackStorage(index: number, storage: NodeStorage) {
+    return storage
   }
 }

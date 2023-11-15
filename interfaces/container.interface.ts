@@ -9,6 +9,7 @@ export interface LXCContainer {
   type: string;
   mem: number;
   uptime: number;
+  convertedUptime: string;
   swap: number;
   disk: number;
   diskwrite: number;
@@ -17,4 +18,5 @@ export interface LXCContainer {
   cpu: number;
   name: string;
   pid: number;
+  node: string;
 }

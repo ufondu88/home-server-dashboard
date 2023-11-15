@@ -1,25 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ProxmoxService } from './proxmox.service';
-import { CreateProxmoxDto } from './dto/create-proxmox.dto';
-import { UpdateProxmoxDto } from './dto/update-proxmox.dto';
 
 @Controller('proxmox')
 export class ProxmoxController {
   constructor(private readonly proxmoxService: ProxmoxService) { }
 
-  @Post()
-  create(@Body() createProxmoxDto: CreateProxmoxDto) {
-    return this.proxmoxService.create(createProxmoxDto);
-  }
-
   @Get()
   findAll() {
-    return this.proxmoxService.findAll();
+    return this.proxmoxService.getAllNodes();
   }
 
   @Get('containers')
   getAllContainers(@Query('node') node: string) {
     return this.proxmoxService.getAllContainers(node);
+  }
+
+  @Get('node/summary')
+  getNodeSummary(@Query('node') node: string) {
+    return this.proxmoxService.getNodeSummary(node);
   }
 
   @Get('node/storage')
@@ -37,18 +35,10 @@ export class ProxmoxController {
     return this.proxmoxService.getNodeVMs(node);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.proxmoxService.findOne(+id);
-  }
+  @Post('node/vm/toggle/:action/:vmid/:vmname/:nodename')
+  toggleVM(@Param() params: { action: string, vmid: string, vmname: string, nodename: string }) {
+    const { action, nodename, vmid, vmname } = params
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProxmoxDto: UpdateProxmoxDto) {
-    return this.proxmoxService.update(+id, updateProxmoxDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.proxmoxService.remove(+id);
+    return this.proxmoxService.toggleVM(vmid, vmname, nodename, action);
   }
 }

@@ -27,22 +27,34 @@
         </ion-card-header>
 
         <ion-card-content>
-          Number of nodes: {{proxmoxInfo.nodes.length}}
-
-          <ion-accordion-group *ngIf="proxmoxInfo.nodes.length > 0">
-            <ion-accordion *ngFor="let node of proxmoxInfo.nodes" value="{{node.node}}">
-              <ion-item slot="header" color="light">
-                <ion-label>{{node.node}}</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
+          <ion-card class="proxmox-node" *ngFor="let node of nodes">
+            <ion-card-header>
+              <ion-card-title>
+                {{node.node}}
                 <ion-chip color="{{node.status == 'online' ? 'success' : 'danger'}}">{{node.status}}</ion-chip>
                 <ion-chip>{{node.uptime | convertSeconds}}</ion-chip>
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="ion-padding" slot="content">
+                <app-server-stats [node]="node"></app-server-stats>
               </div>
+            </ion-card-content>
+          </ion-card>
+
+          <!-- <ion-accordion-group>
+            <ion-accordion *ngFor="let node of nodes" value="{{node.node}}">
+              <ion-item slot="header" color="light">
+                <ion-label>{{node.node}}</ion-label>
+                <ion-chip color="{{node.status == 'online' ? 'success' : 'danger'}}">{{node.status}}</ion-chip>
+                <ion-chip>{{node.uptime | convertSeconds}}</ion-chip>
+              </ion-item>
               <div class="ion-padding" slot="content">
                 <app-server-stats [node]="node"></app-server-stats>
               </div>
             </ion-accordion>
-          </ion-accordion-group>
+          </ion-accordion-group> -->
         </ion-card-content>
       </ion-card>
     </div>

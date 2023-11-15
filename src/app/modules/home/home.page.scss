@@ -26,6 +26,10 @@
   text-decoration: none;
 }
 
+.proxmox-node {
+  --background: #000;
+}
+
 ion-card-title:hover {
   font-weight: bold;
   cursor: pointer;

@@ -9,4 +9,5 @@ export interface NodeStorage {
   storage: string;
   active: number;
   enabled: number;
+  node: string;
 }

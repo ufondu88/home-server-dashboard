@@ -1,42 +1,46 @@
-<div class="grid">
-  <app-card class="merge-row" [title]="'Server CPU'">
-    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
-      {{node.cpu}} %
-    </h1>
+<div class="card-container">
+  <app-card [title]="'Server CPU'">
+    <div class="stat-container">
+      <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
+        {{node.cpu}} %
+      </h1>
+    </div>
   </app-card>
   
-  <app-card class="top-card" [title]="'Total Memory'">
-    <h1 [style.font-weight]="'bold'">
-      {{node.maxmem | convertBytes}}
-    </h1>
+  <app-card id="ram-usage-click-trigger" [title]="'RAM Usage'">
+    <div class="stat-container">
+      <h1 
+        [style.color]="(node.mem / node.maxmem) * 100 < 30 ? '#74BF6B': (node.mem / node.maxmem) * 100 < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'"
+        [style.margin-right]="'5px'">
+        {{((node.mem / node.maxmem) * 100).toFixed(2)}}%
+      </h1> 
+    </div>
   </app-card>
-  <app-card class="top-card" [title]="'Memory Usage'">
-    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
-      {{node.mem | convertBytes}}
-    </h1>
-  </app-card>
+  <ion-popover trigger="ram-usage-click-trigger" triggerAction="click">
+    <ng-template>
+      <ion-content class="ion-padding">
+        <h4>
+          {{node.mem | convertBytes}} / {{node.maxmem | convertBytes}}
+        </h4>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
 
-  <app-card class="top-card" [title]="'Memory Usage'">
-    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
-      {{node.mem | convertBytes}}
-    </h1>
+  <app-card id="disk-usage-click-trigger" [title]="'HD Space (root)'">
+    <div class="stat-container">
+      <h1 [style.color]="(node.disk / node.maxdisk) * 100 < 30 ? '#74BF6B': (node.disk / node.maxdisk) * 100 < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'"
+        [style.margin-right]="'5px'">
+        {{((node.disk / node.maxdisk) * 100).toFixed(2)}}%
+      </h1>
+    </div>
   </app-card>
-
-  <app-card class="bottom-card" [title]="'Memory Usage'">
-    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
-      1
-    </h1>
-  </app-card>
-
-  <app-card class="bottom-card" [title]="'Memory Usage'">
-    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
-      2
-    </h1>
-  </app-card>
-
-  <app-card class="bottom-card" [title]="'Memory Usage'">
-    <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
-      3
-    </h1>
-  </app-card>
+  <ion-popover trigger="disk-usage-click-trigger" triggerAction="click">
+    <ng-template>
+      <ion-content class="ion-padding">
+        <h4>
+        ({{node.disk | convertBytes}} / {{node.maxdisk | convertBytes}})
+        </h4>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
 </div>

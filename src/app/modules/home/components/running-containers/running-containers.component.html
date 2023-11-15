@@ -1,14 +1,21 @@
 <app-card [title]="'Running LXCs'">
   <table>
     <tr>
-      <th>Allocated Disk Space</th>
-      <th>VM</th>
-      <th>Uptime</th>
+      <th>
+       Allocated Disk Space
+        <ion-icon name="funnel-outline"></ion-icon></th>
+      <th>
+       VM
+        <ion-icon name="funnel-outline"></ion-icon></th>
+      <th>
+       Uptime
+        <ion-icon name="funnel-outline"></ion-icon></th>
     </tr>
-    <tr *ngFor="let container of containers">
+    <tr *ngFor="let container of containers; trackBy:trackContainers">
       <td>{{container.maxdisk | convertBytes}}</td>
       <td>{{container.name}}</td>
-      <td>{{container.uptime | convertSeconds:'vm'}}</td>
+      <!-- <td>{{container.uptime | convertSeconds:'vm'}}</td> -->
+      <td>{{container.convertedUptime}}</td>
     </tr>
   </table>
 </app-card>

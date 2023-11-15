@@ -1,6 +1,6 @@
 <app-card [title]="'Storage Pools'">
   <div id="progress-container">
-    <div *ngFor="let item of sortedStorage()" id="storage-container">
+    <div *ngFor="let item of storage; trackBy:trackStorage" id="storage-container">
       <span class="storage-name">{{item.storage}} ({{item.type}})</span>
       <app-progress-bar [value]="item.used_fraction"></app-progress-bar>
       <span
