@@ -1,37 +1,13 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="cancel()">Cancel</ion-button>
-    </ion-buttons>
-    <ion-title>Add new app</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="submit()" [strong]="true">Confirm</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-segment [(ngModel)]="selectedSegment">
+  <ion-segment-button value="custom">
+    <ion-label>Custom</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="supported">
+    <ion-label>Supported</ion-label>
+  </ion-segment-button>
+</ion-segment>
 
-<ion-content class="ion-padding">
-  <form [formGroup]="serviceForm" (ngSubmit)="submit()">
-    <ion-item>
-      <ion-input label="Name" position="floating" formControlName="name" required></ion-input>
-    </ion-item>
-  
-    <ion-item>
-      <ion-input label="Friendly Name" position="floating" formControlName="friendly_name"></ion-input>
-    </ion-item>
-  
-    <ion-item>
-      <ion-input label="URL" position="floating" formControlName="url" required></ion-input>
-    </ion-item>
-  
-    <ion-item>
-      <ion-input label="Port" position="floating" formControlName="port" type="number"></ion-input>
-    </ion-item>
-  
-    <ion-item>
-      <ion-input label="Token" position="floating" formControlName="token"></ion-input>
-    </ion-item>
-  
-    <ion-button expand="full" type="submit">Submit</ion-button>
-  </form>
+<ion-content class="ion-padding" [ngSwitch]="selectedSegment">
+  <app-custom-integration *ngSwitchCase="'custom'"></app-custom-integration>
+  <app-supported-integration *ngSwitchCase="'supported'"></app-supported-integration>
 </ion-content>

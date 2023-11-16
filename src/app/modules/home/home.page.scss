@@ -30,7 +30,20 @@
   --background: #000;
 }
 
+ion-card {
+  border-radius: 15px;
+}
+
 ion-card-title:hover {
   font-weight: bold;
   cursor: pointer;
+}
+
+ion-modal {
+  --width: 60%;
+  --height: 100%;
+
+  ion-content {
+    height: fit-content;
+  }
 }

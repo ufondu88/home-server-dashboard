@@ -1,15 +1,15 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { NodeStorage } from 'interfaces/node-storage.interface';
-import { sorted } from '../../functions/sort.function';
 import { map } from 'rxjs';
-import { ProxmoxService } from '../../proxmox.service';
+import { sorted } from '../../shared/functions/sort.function';
+import { ProxmoxService } from '../proxmox.service';
 
 @Component({
   selector: 'app-server-storage',
   templateUrl: './server-storage.component.html',
   styleUrls: ['./server-storage.component.scss'],
 })
-export class ServerStorageComponent  implements OnInit {
+export class ServerStorageComponent implements OnInit {
   @Input() nodeName: string
   storage: NodeStorage[]
   sortAscending = true

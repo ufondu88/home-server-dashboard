@@ -1,0 +1,23 @@
+<form [formGroup]="serviceForm" (ngSubmit)="submit()">
+  <ion-item>
+    <ion-input label="Name" position="floating" formControlName="name" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Friendly Name" position="floating" formControlName="friendly_name"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="URL" position="floating" formControlName="url" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Port" position="floating" formControlName="port" type="number"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Token" position="floating" formControlName="token"></ion-input>
+  </ion-item>
+
+  <ion-button expand="full" type="submit">Submit</ion-button>
+</form>

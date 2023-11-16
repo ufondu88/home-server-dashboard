@@ -1,0 +1,59 @@
+<div class="container">
+  <div id="logo">
+    <ion-thumbnail>
+      <img src="{{proxmoxIntegrationInfo.icon}}" alt="">
+    </ion-thumbnail>
+  </div>
+
+  <form [formGroup]="proxmoxForm" (ngSubmit)="submit()">
+    <div class="label">
+      <span class="label-title">Username</span>
+      <span class="label-sub-title">Proxmox username</span>
+    </div>
+    <ion-item>
+      <ion-input formControlName="username"></ion-input>
+    </ion-item>
+
+    <div class="label">
+      <span class="label-title">Password</span>
+      <span class="label-sub-title">Proxmox password</span>
+    </div>
+    <ion-item>
+      <ion-input formControlName="password" type="password"></ion-input>
+    </ion-item>
+
+    <div class="label">
+      <span class="label-title">Name</span>
+      <span class="label-sub-title">Used to display the app on the dashboard</span>
+    </div>
+    <ion-item>
+      <ion-input formControlName="name"></ion-input>
+    </ion-item>
+
+    <div class="label">
+      <span class="label-title">Internal IP</span>
+      <span class="label-sub-title">Internal IP-address of the app</span>
+    </div>
+    <ion-item>
+      <ion-input formControlName="internal_address"></ion-input>
+    </ion-item>
+
+    <div class="label">
+      <span class="label-title">Port</span>
+      <span class="label-sub-title">Port for the internal IP</span>
+    </div>
+    <ion-item>
+      <ion-input formControlName="port" type="number"></ion-input>
+    </ion-item>
+
+    <div class="label">
+      <span class="label-title">External IP</span>
+      <span class="label-sub-title">URL that will be opened when clicking on the app</span>
+    </div>
+    <ion-item>
+      <ion-input formControlName="external_address"></ion-input>
+    </ion-item>
+
+    <ion-button expand="full" type="submit">Submit</ion-button>
+  </form>
+</div>

@@ -35,7 +35,7 @@ export class ProxmoxService {
   private getNodeSummaries() {
     // console.log("Getting Proxmox info")
 
-    interval(20000).pipe(
+    interval(5000).pipe(
       startWith(0),
       switchMap(() => {
         return this.http.get<NodeInfo[]>(this.apiUrl).pipe(

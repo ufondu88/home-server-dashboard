@@ -1,62 +1,36 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Dashboard</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
   <div class="container">
-    <div class="row">
+    <div class="row my-3">
       <div class="col text-right">
-        <ion-button (click)="openFormModal()">Add new app</ion-button>
+        <ion-button id="open-form-modal">Add new integration</ion-button>
+
+        <ion-modal #modal trigger="open-form-modal">
+          <ng-template>
+            <ion-segment [(ngModel)]="selectedSegment">
+              <ion-segment-button value="custom">
+                <ion-label>Custom</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="supported">
+                <ion-label>Supported</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+            
+            <ion-content class="ion-padding" [ngSwitch]="selectedSegment">
+              <app-custom-integration *ngSwitchCase="'custom'"></app-custom-integration>
+              <app-supported-integration *ngSwitchCase="'supported'"></app-supported-integration>
+            </ion-content>
+          </ng-template>
+        </ion-modal>
       </div>
     </div>
     <div class="row">
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title (click)="goToApp(proxmoxUrl)">Proxmox</ion-card-title>
-          <ion-card-subtitle>Proxmox</ion-card-subtitle>
-        </ion-card-header>
-
-        <ion-card-content>
-          <ion-card class="proxmox-node" *ngFor="let node of nodes">
-            <ion-card-header>
-              <ion-card-title>
-                {{node.node}}
-                <ion-chip color="{{node.status == 'online' ? 'success' : 'danger'}}">{{node.status}}</ion-chip>
-                <ion-chip>{{node.uptime | convertSeconds}}</ion-chip>
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-              <div class="ion-padding" slot="content">
-                <app-server-stats [node]="node"></app-server-stats>
-              </div>
-            </ion-card-content>
-          </ion-card>
-
-          <!-- <ion-accordion-group>
-            <ion-accordion *ngFor="let node of nodes" value="{{node.node}}">
-              <ion-item slot="header" color="light">
-                <ion-label>{{node.node}}</ion-label>
-                <ion-chip color="{{node.status == 'online' ? 'success' : 'danger'}}">{{node.status}}</ion-chip>
-                <ion-chip>{{node.uptime | convertSeconds}}</ion-chip>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                <app-server-stats [node]="node"></app-server-stats>
-              </div>
-            </ion-accordion>
-          </ion-accordion-group> -->
-        </ion-card-content>
-      </ion-card>
+      <app-proxmox></app-proxmox>
     </div>
 
 
@@ -65,8 +39,7 @@
       <div class="col-sm-12 col-md-4" *ngFor="let app of allApps">
         <ion-card>
           <ion-card-header>
-            <ion-card-title (click)="goToApp(app.full_url)">{{app.name}}</ion-card-title>
-            <ion-card-subtitle>{{app.friendly_name}}</ion-card-subtitle>
+            <ion-card-title (click)="goToApp(app.full_url!)">{{app.name}}</ion-card-title>
           </ion-card-header>
 
           <ion-card-content>

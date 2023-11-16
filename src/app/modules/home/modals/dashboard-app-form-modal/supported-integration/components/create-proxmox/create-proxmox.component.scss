@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  #logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  form {
+    .label {
+      display: flex;
+      flex-direction: column;
+
+      .label-title {
+        color: white;
+      }
+
+      .label-sub-title {
+        color: rgba(255, 255, 255, 0.621);
+        font-size: small;
+      }
+    }
+    ion-item {
+      margin-bottom: 8px;
+    }
+  }
+}

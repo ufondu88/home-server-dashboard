@@ -1,13 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { IonModal, ModalController } from '@ionic/angular';
-import { DashboardApp } from 'interfaces/dashboard-service.interface';
-import { ProxmoxInfo } from 'interfaces/proxmox-info.interface';
-import { tap } from 'rxjs';
-import { DashboardAppService } from './dashboard-app.service';
-import { DashboardAppFormModalComponent } from './modals/dashboard-app-form-modal/dashboard-app-form-modal.component';
-import { ProxmoxService } from './proxmox.service';
+import { Integration } from 'interfaces/integration.interface';
 import { NodeInfo } from 'interfaces/node.interface';
+import { ProxmoxService } from '../proxmox/proxmox.service';
+import { IntegrationService } from './integration.service';
+import { IntegrationFormModalComponent } from './modals/dashboard-app-form-modal/dashboard-app-form-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -18,24 +16,22 @@ export class HomePage {
   @ViewChild(IonModal) modal: IonModal;
   serviceForm: FormGroup;
   formOpen = false;
-  allApps: DashboardApp[] = []
-  proxmoxUrl = 'https://192.168.86.53:8006'
-  nodes: NodeInfo[]
+  allApps: Integration[] = []
+  selectedSegment = 'custom'
 
   constructor(
-    private dashboarAppService: DashboardAppService,
-    private proxmoxService: ProxmoxService,
+    private dashboarAppService: IntegrationService,
     public modalController: ModalController
   ) { }
 
   ngOnInit() {
     this.dashboarAppService.ALL_APPS.subscribe(res => this.allApps = res)
-    this.proxmoxService.NODES_INFO.subscribe(res => this.nodes = res)
   }
 
   async openFormModal() {
     const modal = await this.modalController.create({
-      component: DashboardAppFormModalComponent,
+      component: IntegrationFormModalComponent,
+      cssClass: "modal"
     });
 
     modal.present();
@@ -43,7 +39,6 @@ export class HomePage {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm') {
-      console.log('sending data to service')
       return this.dashboarAppService.create(data)
     }
 
@@ -53,5 +48,4 @@ export class HomePage {
   goToApp(url: string) {
     window.open(url, '_blank'); // open page in new tab
   }
-
 }

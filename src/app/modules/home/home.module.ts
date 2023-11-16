@@ -1,43 +1,38 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { HomePage } from './home.page';
 
 import { HttpClientModule } from '@angular/common/http';
-import { DashboardAppService } from './dashboard-app.service';
+import { ProxmoxModule } from '../proxmox/proxmox.module';
 import { HomePageRoutingModule } from './home-routing.module';
-import { DashboardAppFormModalComponent } from './modals/dashboard-app-form-modal/dashboard-app-form-modal.component';
-import { ProxmoxService } from './proxmox.service';
+import { IntegrationService } from './integration.service';
+import { CustomIntegrationComponent } from './modals/dashboard-app-form-modal/custom-integration/custom-integration.component';
+import { IntegrationFormModalComponent } from './modals/dashboard-app-form-modal/dashboard-app-form-modal.component';
+import { SupportedIntegrationComponent } from './modals/dashboard-app-form-modal/supported-integration/supported-integration.component';
+import { IonicModule } from '@ionic/angular';
 import { SharedModule } from '../shared/shared.module';
-import { ServerStatsComponent } from './components/server-stats/server-stats.component';
-import { ServerCpuAndMemoryComponent } from './components/server-cpu-and-memory/server-cpu-and-memory.component';
-import { ServerStorageComponent } from './components/server-storage/server-storage.component';
-import { CardComponent } from './components/card/card.component';
-import { RunningVmsComponent } from './components/running-vms/running-vms.component';
-import { RunningContainersComponent } from './components/running-containers/running-containers.component';
+import { CreateProxmoxComponent } from './modals/dashboard-app-form-modal/supported-integration/components/create-proxmox/create-proxmox.component';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
     IonicModule,
     HomePageRoutingModule,
+    FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    ProxmoxModule,
     SharedModule
   ],
   declarations: [
     HomePage,
-    DashboardAppFormModalComponent,
-    ServerStatsComponent,
-    ServerCpuAndMemoryComponent,
-    ServerStorageComponent,
-    CardComponent,
-    RunningVmsComponent,
-    RunningContainersComponent
+    CreateProxmoxComponent,
+    IntegrationFormModalComponent,
+    CustomIntegrationComponent,
+    SupportedIntegrationComponent,
   ],
-  providers: [DashboardAppService, ProxmoxService]
+  providers: [IntegrationService]
 })
 export class HomePageModule { }

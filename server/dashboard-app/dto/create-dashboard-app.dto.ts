@@ -1,24 +1,24 @@
-import { IsBoolean, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
-export class CreateDashboardAppDto {
+export class CreateIntegrationDto {
   @IsString()
   id?: string;
 
   @IsString()
   name: string;
-  
+
   @IsString()
   friendly_name?: string;
-  
+
   @IsString()
   url: string;
 
   @IsString()
   full_url: string;
-  
+
   @IsString()
   port?: number;
-  
+
   @IsString()
   token?: string;
 }

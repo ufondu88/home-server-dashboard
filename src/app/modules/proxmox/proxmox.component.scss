@@ -1,0 +1,12 @@
+.proxmox-node {
+  --background: #000;
+}
+
+ion-card {
+  border-radius: 15px;
+}
+
+ion-card-title:hover {
+  font-weight: bold;
+  cursor: pointer;
+}

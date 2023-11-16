@@ -1,18 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { IntegrationService } from '../../../integration.service';
 
 @Component({
-  selector: 'app-dashboard-app-form-modal',
-  templateUrl: './dashboard-app-form-modal.component.html',
-  styleUrls: ['./dashboard-app-form-modal.component.scss'],
+  selector: 'app-custom-integration',
+  templateUrl: './custom-integration.component.html',
+  styleUrls: ['./custom-integration.component.scss'],
 })
-export class IntegrationFormModalComponent implements OnInit {
+export class CustomIntegrationComponent implements OnInit {
   serviceForm: FormGroup;
-  selectedSegment = 'custom'
 
   constructor(
     private formBuilder: FormBuilder,
+    private integrationService: IntegrationService,
     private modalController: ModalController
   ) {
     this.serviceForm = this.formBuilder.group({
@@ -32,11 +33,14 @@ export class IntegrationFormModalComponent implements OnInit {
       return;
     }
 
-    // Close the modal when done.
-    return this.modalController.dismiss(this.serviceForm.value, 'confirm');
+    this.integrationService.create(this.serviceForm.value).subscribe(res => {
+      console.log(res)
+      this.modalController.dismiss()
+    })
   }
 
   cancel() {
-    return this.modalController.dismiss(null, 'cancel');
+    // return this.modalController.dismiss(null, 'cancel');
   }
+
 }

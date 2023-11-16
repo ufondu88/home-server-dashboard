@@ -1,0 +1,24 @@
+<div class="dropdown" [class.active]="isInputActive">
+  <ion-item id="searchbar">
+    <ion-input 
+      placeholder="Enter text"
+      [(ngModel)]="searchText" 
+      placeholder="Search..." 
+      (ionFocus)="onInputFocus()" 
+      (ionBlur)="onInputBlur()"
+    ></ion-input>
+  </ion-item>
+  <ion-list *ngIf="isInputActive">
+    <ion-item *ngFor="let integration of integrations" (click)="selectOption(integration)" button>
+      <ion-thumbnail>
+        <img alt="Silhouette of mountains" src="{{ integration.icon }}" />
+      </ion-thumbnail>
+      <ion-label>{{ integration.name }}</ion-label>
+    </ion-item>
+  </ion-list>
+</div>
+
+<ion-content [ngSwitch]="selectedOption">
+  <app-create-proxmox *ngSwitchCase="'proxmox'"></app-create-proxmox>
+  <app-supported-integration *ngSwitchCase="'supported'"></app-supported-integration>
+</ion-content>

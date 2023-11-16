@@ -1,18 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateDashboardAppDto } from './dto/create-dashboard-app.dto';
-import { UpdateDashboardAppDto } from './dto/update-dashboard-app.dto';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as mkdirp from 'mkdirp';
+import * as path from 'path';
+import { CreateIntegrationDto } from './dto/create-dashboard-app.dto';
+import { UpdateIntegrationDto } from './dto/update-dashboard-app.dto';
 
 @Injectable()
-export class DashboardAppService {
+export class IntegrationService {
   private logger = new Logger('dashboard-service')
 
   private readonly dataDir = '/data';
   private readonly dashboardDataDir = '/data/dashboard-apps';
 
-  async create(createDashboardAppDto: CreateDashboardAppDto) {
+  async create(createIntegrationDto: CreateIntegrationDto) {
     // Create the data directories if they don't exist
     mkdirp.sync(this.dataDir);
     mkdirp.sync(this.dashboardDataDir);
@@ -20,21 +20,21 @@ export class DashboardAppService {
     // Use global crypto property to create random ID
     const id = crypto.randomUUID()
 
-    createDashboardAppDto.id = id
-    createDashboardAppDto.full_url = this.fullUrl(createDashboardAppDto)
+    createIntegrationDto.id = id
+    createIntegrationDto.full_url = this.fullUrl(createIntegrationDto)
 
     const currentApps = await this.findAll()
 
-    currentApps.push(createDashboardAppDto)
+    currentApps.push(createIntegrationDto)
 
     await this.overwriteData(currentApps)
 
     return {
-      message: `${createDashboardAppDto.name} successfully created`
+      message: `${createIntegrationDto.name} successfully created`
     };
   }
 
-  async findAll(): Promise<CreateDashboardAppDto[]> {
+  async findAll(): Promise<CreateIntegrationDto[]> {
     const filePath = path.join(this.dashboardDataDir, 'apps.json');
 
     try {
@@ -67,9 +67,9 @@ export class DashboardAppService {
     }
   }
 
-  private fullUrl(createDashboardAppDto: CreateDashboardAppDto) {
-    const url = createDashboardAppDto.url
-    const port = createDashboardAppDto.port
+  private fullUrl(createIntegrationDto: CreateIntegrationDto) {
+    const url = createIntegrationDto.url
+    const port = createIntegrationDto.port
 
     if (this.isHttpAddress(url)) {
       return url;
@@ -97,14 +97,14 @@ export class DashboardAppService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} dashboardApp`;
+    return `This action returns a #${id} integration`;
   }
 
-  update(id: number, updateDashboardAppDto: UpdateDashboardAppDto) {
-    return `This action updates a #${id} dashboardApp`;
+  update(id: number, updateIntegrationDto: UpdateIntegrationDto) {
+    return `This action updates a #${id} integration`;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} dashboardApp`;
+    return `This action removes a #${id} integration`;
   }
 }

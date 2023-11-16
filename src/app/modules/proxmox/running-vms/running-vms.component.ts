@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { VirtualMachine } from 'interfaces/vm.interface';
 import { map } from 'rxjs';
-import { sorted } from '../../functions/sort.function';
-import { ProxmoxService } from '../../proxmox.service';
+import { sorted } from '../../shared/functions/sort.function';
+import { ProxmoxService } from '../proxmox.service';
 
 @Component({
   selector: 'app-running-vms',
@@ -31,7 +31,7 @@ export class RunningVmsComponent implements OnInit {
 
   toggleVM(vm: VirtualMachine) {
     const action = vm.status == 'running' ? 'shutdown' : 'start'
-    
+
     this.proxmoxService.toggleVM(vm.vmid, vm.name, this.nodeName, action)
   }
 

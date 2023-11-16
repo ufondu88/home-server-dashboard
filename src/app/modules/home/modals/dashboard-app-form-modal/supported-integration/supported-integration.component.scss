@@ -1,0 +1,48 @@
+/* custom-dropdown.component.css */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+#searchbar {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+ion-list {
+  transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+
+  ion-item {
+    cursor: pointer;
+
+    ion-thumbnail {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+
+      img {
+        object-fit: contain;
+      }
+    }
+  }
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  z-index: 1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow: hidden;
+  transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+ul.active {
+  height: auto;
+  opacity: 1;
+}
