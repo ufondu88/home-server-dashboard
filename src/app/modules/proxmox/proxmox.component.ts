@@ -33,7 +33,7 @@ export class ProxmoxComponent implements OnInit {
     interval(5000).pipe(
       startWith(0),
       switchMap(() => {
-        return this.proxmoxService.getNodeSummariesForIntegration(id).pipe(
+        return this.proxmoxService.getNodeSummaries(id).pipe(
           tap(nodes => this.nodes = nodes),
           switchMap(nodes => {
             const vms$: Observable<VirtualMachine[]>[] = []
@@ -43,13 +43,13 @@ export class ProxmoxComponent implements OnInit {
             nodes.forEach(node => {
               const nodename = node.node
 
-              vms$.push(this.proxmoxService.getNodeVMsForIntegration(id, nodename).pipe(
+              vms$.push(this.proxmoxService.getNodeVMs(id, nodename).pipe(
                 tap(vms => this.checkArrays(vms, nodename, 'vms'))
               ))
-              containers$.push(this.proxmoxService.getNodeContainersForIntegration(id, nodename).pipe(
+              containers$.push(this.proxmoxService.getNodeContainers(id, nodename).pipe(
                 tap(containers => this.checkArrays(containers, nodename, 'containers'))
               ))
-              storages$.push(this.proxmoxService.getNodeStorageForIntegration(id, nodename).pipe(
+              storages$.push(this.proxmoxService.getNodeStorage(id, nodename).pipe(
                 tap(storages => this.checkArrays(storages, nodename, 'storages'))
               ))
             })
