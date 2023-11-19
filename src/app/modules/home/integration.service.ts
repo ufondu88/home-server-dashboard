@@ -2,12 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Integration } from 'interfaces/integration.interface';
 import { BehaviorSubject, Observable, interval, startWith, switchMap, tap } from 'rxjs';
+import { INTEGRATION_API_URL, objectArraysAreTheSame } from 'src/constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IntegrationService {
-  private apiUrl = 'http://localhost:3000/api/integration';
   private readonly _ALL_APPS = new BehaviorSubject<Integration[]>([]);
   private existingApps: Integration[] = []
 
@@ -19,7 +19,7 @@ export class IntegrationService {
   }
 
   create(integration: Integration) {
-    return this.http.post(this.apiUrl, integration).pipe(
+    return this.http.post(INTEGRATION_API_URL, integration).pipe(
       tap(() => this.getAll())
     )
   }
@@ -29,11 +29,11 @@ export class IntegrationService {
       startWith(0),
       switchMap(() => {
         console.log("Getting all apps")
-        return this.http.get<Integration[]>(this.apiUrl).pipe(
+        return this.http.get<Integration[]>(INTEGRATION_API_URL).pipe(
         )
       })
     ).subscribe(apps => {
-      if (!this.objectArraysAreTheSame(apps, this.existingApps)) {
+      if (!objectArraysAreTheSame(apps, this.existingApps)) {
         this.existingApps = apps
 
         this._ALL_APPS.next(apps)
@@ -41,13 +41,5 @@ export class IntegrationService {
     })
   }
 
-  private objectArraysAreTheSame(array: any[], comparator: any[]) {
-    // Check if the length of both arrays is the same
-    if (array.length !== comparator.length) {
-      return false;
-    }
-
-    // Check if every object in array exists in comparator
-    return array.every(obj1 => comparator.some(obj2 => JSON.stringify(obj1) === JSON.stringify(obj2)));
-  }
+  
 }
