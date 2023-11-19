@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Logger, Param, Patch, Post } from '@nestjs/common';
-import { IntegrationService } from './dashboard-app.service';
-import { CreateIntegrationDto } from './dto/create-dashboard-app.dto';
-import { UpdateIntegrationDto } from './dto/update-dashboard-app.dto';
+import { CreateIntegrationDto } from './dto/create-integration.dto';
+import { UpdateIntegrationDto } from './dto/update-integration.dto';
+import { IntegrationService } from './integration.service';
 
-@Controller('dashboard-app')
+@Controller('integration')
 export class IntegrationController {
-  private logger = new Logger('dashboard-controller')
+  private logger = new Logger('IntegrationController')
 
   constructor(private readonly integrationService: IntegrationService) { }
 

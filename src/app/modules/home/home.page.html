@@ -29,24 +29,27 @@
         </ion-modal>
       </div>
     </div>
-    <div class="row">
-      <app-proxmox></app-proxmox>
+    <div *ngFor="let app of allApps" class="row">
+      <div [ngSwitch]="app.type">
+        <app-proxmox *ngSwitchCase="'proxmox'" [app]="app"></app-proxmox>
+
+        <div *ngSwitchDefault class="col-sm-12 col-md-4">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title (click)="goToApp(app.full_url!)">{{app.name}}</ion-card-title>
+            </ion-card-header>
+    
+            <ion-card-content>
+              Here's a small text description for the card content. Nothing more, nothing less.
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </div>
     </div>
 
 
 
     <div class="row" *ngIf="allApps.length; else noApps">
-      <div class="col-sm-12 col-md-4" *ngFor="let app of allApps">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title (click)="goToApp(app.full_url!)">{{app.name}}</ion-card-title>
-          </ion-card-header>
-
-          <ion-card-content>
-            Here's a small text description for the card content. Nothing more, nothing less.
-          </ion-card-content>
-        </ion-card>
-      </div>
     </div>
 
     <ng-template #noApps>

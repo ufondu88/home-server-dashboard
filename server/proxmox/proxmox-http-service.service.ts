@@ -5,17 +5,11 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as https from 'https'
-
-const TWO_HOURS = 60 * 60 * 1000 * 2
-const AUTH_FILE = 'auth.json'
-const COOKIE_FILE = 'cookie.json'
+import { APPS_FILE, DASHBOARD_DATA_DIR, DATA_DIR, TWO_HOURS } from 'server/constants';
 
 @Injectable()
 export class ProxmoxHttpService {
   private logger = new Logger('ProxmoxHttpService')
-
-  private readonly dataDir = '/data';
-  private readonly dashboardDataDir = '/data/dashboard-apps';
 
   domain = "https://192.168.86.53:8006/api2/json"
   cookieTimestamp = 0;
@@ -34,8 +28,8 @@ export class ProxmoxHttpService {
 
   constructor(private httpService: HttpService) { }
 
-  request(method: string, url: string, object?: any) {
-    this.renewProxmoxCredsIfExpired()
+  request(method: string, url: string, id: string, object?: any) {
+    this.renewProxmoxCredsIfExpired(id)
 
     switch (method.toLowerCase()) {
       case 'get':
@@ -45,16 +39,17 @@ export class ProxmoxHttpService {
         )
       case 'put':
         return this.httpService.put(url, object, this.proxmoxHeaders).pipe(
-          map(res => res.data),
+          map(res => res['data']['data']),
           catchError(res => of({ "message": res.message, "status": res.status }))
         )
       case 'post':
         return this.httpService.post(url, object, this.proxmoxHeaders).pipe(
-          map(res => res.data)
+          map(res => res['data']['data']),
+          catchError(res => of({ "message": res.message, "status": res.status }))
         )
       case 'delete':
         return this.httpService.delete(url, this.proxmoxHeaders).pipe(
-          map(res => res.data),
+          map(res => res['data']['data']),
           catchError(res => of({ "message": res.message, "status": res.status }))
         )
       default:
@@ -62,16 +57,69 @@ export class ProxmoxHttpService {
     }
   }
 
+  private renewProxmoxCredsIfExpired(id: string) {
+    const cookie = this.getLocalProxmoxCookie(id)
+
+    const { ticket, CSRFPreventionToken, timestamp } = cookie
+
+
+    if (!ticket || !CSRFPreventionToken || !timestamp) {
+      this.logger.log('No cookie information. Getting cookie from server')
+      this.getProxmoxCredsFromServer(id)
+    } else {
+      this.proxmoxCookie = cookie['ticket']
+      this.proxmoxToken = cookie['CSRFPreventionToken']
+      this.cookieTimestamp = cookie['timestamp']
+    }
+
+    this.proxmoxHeaders = {
+      headers: {
+        Cookie: `PVEAuthCookie=${this.proxmoxCookie}`,
+        CSRFPreventionToken: this.proxmoxToken
+      },
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false
+      })
+    };
+
+    if (Date.now() >= this.cookieTimestamp + TWO_HOURS) {
+      this.logger.log('Cookie expired. Renewing cookie from server')
+      this.getProxmoxCredsFromServer(id)
+    }
+  }
+
+  private getLocalProxmox(id: string) {
+    const ALL_APPS: any[] = this.readJSONFile(APPS_FILE)
+
+    const proxmox = ALL_APPS.filter(app => app.id == id)[0]
+
+    return proxmox
+  }
+
+  private getLocalProxmoxCookie(id: string) {
+    const proxmox = this.getLocalProxmox(id)
+
+    return proxmox.cookie as { ticket: string, CSRFPreventionToken: string, timestamp: number }
+  }
+
+  private updateLocalProxmox(id: string, data: any) {
+    const ALL_APPS: any[] = this.readJSONFile(APPS_FILE)
+
+    for (const app of ALL_APPS) {
+      if (app.id == id) {
+        app.cookie = data
+      }
+    }
+
+    this.overwriteFile(APPS_FILE, ALL_APPS)
+  }
+
   private readJSONFile(file: string) {
     // Create the data directories if they don't exist
-    mkdirp.sync(this.dataDir);
-    mkdirp.sync(this.dashboardDataDir);
+    mkdirp.sync(DATA_DIR);
+    mkdirp.sync(DASHBOARD_DATA_DIR);
 
-    const filePath = path.join(this.dashboardDataDir, file);
-
-    if (!fs.existsSync(filePath)) {
-      this.overwriteFile(filePath, {})
-    }
+    const filePath = path.join(DASHBOARD_DATA_DIR, file);
 
     try {
       const rawData = fs.readFileSync(filePath, 'utf8');
@@ -83,16 +131,18 @@ export class ProxmoxHttpService {
     }
   }
 
-  private getUserCreds(): { username: string, password: string } {
+  private getUserCreds(id: string): { username: string, password: string } {
     this.logger.log('Getting user credentials')
 
-    return this.readJSONFile(AUTH_FILE)
+    const proxmox = this.getLocalProxmox(id)
+
+    return proxmox.auth
   }
 
   private overwriteFile(file: string, newData: any): void {
     this.logger.log(`Writing to ${file}`)
 
-    const filePath = path.join(this.dashboardDataDir, file);
+    const filePath = path.join(DASHBOARD_DATA_DIR, file);
 
     try {
       fs.writeJSONSync(filePath, newData);
@@ -102,38 +152,13 @@ export class ProxmoxHttpService {
     }
   }
 
-  private renewProxmoxCredsIfExpired() {
-    this.logger.log('Reading cookie from file')
-
-    const cookie = this.readJSONFile(COOKIE_FILE)
-
-    this.proxmoxCookie = cookie['ticket']
-    this.proxmoxToken = cookie['CSRFPreventionToken']
-    this.cookieTimestamp = cookie['timestamp']
-
-    this.proxmoxHeaders = {
-      headers: {
-        Cookie: `PVEAuthCookie=${this.proxmoxCookie}`
-      },
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false
-      })
-    };
-
-    if (Date.now() >= this.cookieTimestamp + TWO_HOURS) {
-      this.logger.log('Cookie expired. Renewing cookie from server')
-      this.getProxmoxCredsFromServer()
-    } else {
-      this.logger.log('Cookie still valid!')
-    }
-  }
-
-  private getProxmoxCredsFromServer() {
-    const { username, password } = this.getUserCreds()
+  private getProxmoxCredsFromServer(id: string) {
+    const { username, password } = this.getUserCreds(id)
     const params = new URLSearchParams();
 
-    params.append('username', username);
-    params.append('password', password);
+    // decode the base64 strings
+    params.append('username', atob(username));
+    params.append('password', atob(password));
 
     const config = {
       headers: {
@@ -152,13 +177,13 @@ export class ProxmoxHttpService {
         this.proxmoxToken = res.data['data']['CSRFPreventionToken']
         this.cookieTimestamp = Date.now()
 
-        const cookieFileData = {
+        const cookieData = {
           ticket: this.proxmoxCookie,
           CSRFPreventionToken: this.proxmoxToken,
           timestamp: this.cookieTimestamp
         }
 
-        this.overwriteFile(COOKIE_FILE, cookieFileData)
+        this.updateLocalProxmox(id, cookieData)
 
         this.proxmoxHeaders = {
           headers: {

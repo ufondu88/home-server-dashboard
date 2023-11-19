@@ -7,17 +7,37 @@
     <ion-card class="proxmox-node" *ngFor="let node of nodes">
       <ion-card-header>
         <ion-card-title>
-          {{node.node}}
-        </ion-card-title>
-        <ion-card-subtitle>
+          <span>
+            <ion-icon name="tv-outline"></ion-icon>
+            {{node.node}}
+          </span>
           <ion-chip color="{{node.status == 'online' ? 'success' : 'danger'}}">{{node.status}}</ion-chip>
           <ion-chip>{{node.uptime | convertSeconds}}</ion-chip>
+        </ion-card-title>
+        <ion-card-subtitle>
         </ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
         <div class="ion-padding" slot="content">
-          <app-server-stats [node]="node"></app-server-stats>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <app-server-cpu-and-memory [node]="node"></app-server-cpu-and-memory>
+              </ion-col>
+              <ion-col>
+                <app-server-storage [storage]="storages[node.node]"></app-server-storage>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <app-running-vms [VMs]="vms[node.node]"></app-running-vms>
+              </ion-col>
+              <ion-col>
+                <app-running-containers [containers]="containers[node.node]"></app-running-containers>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </div>
       </ion-card-content>
     </ion-card>

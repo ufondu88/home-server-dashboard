@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Observable, combineLatest, forkJoin, map, switchMap, tap } from 'rxjs';
-import { ProxmoxHttpService } from './proxmox-http-service.service';
-import { ProxmoxHttp } from './classes/proxmox-http.class';
 import { LXCContainer } from 'interfaces/container.interface';
-import { NodeInfo } from 'interfaces/node.interface';
-import { VirtualMachine } from 'interfaces/vm.interface';
 import { NodeStorage } from 'interfaces/node-storage.interface';
+import { NodeInfo } from 'interfaces/node.interface';
 import { Time } from 'interfaces/time.interface';
+import { VirtualMachine } from 'interfaces/vm.interface';
+import { map, tap } from 'rxjs';
+import { ProxmoxHttp } from './classes/proxmox-http.class';
+import { ProxmoxHttpService } from './proxmox-http-service.service';
 
 @Injectable()
 export class ProxmoxService extends ProxmoxHttp {
@@ -22,69 +22,37 @@ export class ProxmoxService extends ProxmoxHttp {
     super(http)
   }
 
-  findAll() {
-    return this.getAllNodes().pipe(
-      switchMap(nodes => {
-        this.nodes = nodes;
+  getAllContainers(id: string, nodename: string) {
+    this.logger.log(`Getting all containers for node ${nodename}`)
 
-        const vms$: Observable<VirtualMachine[]>[] = []
-        const containers$: Observable<LXCContainer[]>[] = []
+    const url = `${this.domain}/nodes/${nodename}/lxc`
 
-        nodes.forEach(node => {
-          const nodeName = node.node
-
-          vms$.push(this.getAllVMs(nodeName))
-          containers$.push(this.getAllContainers(nodeName))
-        })
-
-        const vmsForkJoin$ = combineLatest(vms$)
-        const containersForkJoin$ = combineLatest(containers$)
-
-        // Use forkJoin to wait for all observables to complete
-        return forkJoin([vmsForkJoin$, containersForkJoin$])
-      }),
-      map((res: [VirtualMachine[][], LXCContainer[][]]) => {
-        const vms = res[0][0]
-        const containers = res[1][0]
-
-        this.logger.log(vms)
-
-        return { nodes: this.nodes, vms, containers }
-      })
-    )
-  }
-
-  getAllContainers(nodeName: string) {
-    this.logger.log(`Getting all containers for node ${nodeName}`)
-
-    const url = `${this.domain}/nodes/${nodeName}/lxc`
-
-    return this.get(url)!.pipe(
+    return this.get(url, id)!.pipe(
       tap((containers: LXCContainer[]) => this.containers = containers)
     )
   }
 
-  getAllVMs(nodeName: string) {
-    this.logger.log(`Getting all VMs for node ${nodeName}`)
+  getAllVMs(id: string, nodename: string) {
+    this.logger.log(`Getting all VMs for node ${nodename}`)
 
-    const url = `${this.domain}/nodes/${nodeName}/qemu`
+    const url = `${this.domain}/nodes/${nodename}/qemu`
 
-    return this.get(url)!.pipe(
+    return this.get(url, id)!.pipe(
       tap((vms: VirtualMachine[]) => this.vms = vms),
       map(vms => {
-        vms.forEach(vm => vm.node = nodeName)
+        vms.forEach(vm => vm.node = nodename)
 
         return vms
       })
     )
   }
 
-  getAllNodes() {
-    this.logger.log('Getting all nodes')
+  getAllNodes(id: string) {
+    this.logger.log(`Getting all nodes for ${id}`)
 
     const url = `${this.domain}/nodes`
 
-    return this.get(url)!.pipe(
+    return this.get(url, id)!.pipe(
       map((nodes: NodeInfo[]) => {
         nodes.forEach(node => {
           node.cpu = +(node.cpu * 100).toFixed(2)
@@ -95,37 +63,37 @@ export class ProxmoxService extends ProxmoxHttp {
     );
   }
 
-  getNodeSummary(nodeName: string) {
-    this.logger.log(`Getting node summary for node ${nodeName}`)
+  getNodeSummary(id: string, nodename: string) {
+    this.logger.log(`Getting node summary for node ${nodename}`)
 
-    const url = `${this.domain}/nodes/${nodeName}`
+    const url = `${this.domain}/nodes/${nodename}`
 
-    return this.get(url)
+    return this.get(url, id)!
   }
 
-  getNodeStorage(nodeName: string) {
-    this.logger.log(`Getting storage info for node ${nodeName}`)
+  getNodeStorage(id: string, nodename: string) {
+    this.logger.log(`Getting storage info for node ${nodename}`)
 
-    const url = `${this.domain}/nodes/${nodeName}/storage`
+    const url = `${this.domain}/nodes/${nodename}/storage`
 
-    return this.get(url)!.pipe(
+    return this.get(url, id)!.pipe(
       map((storages: NodeStorage[]) => {
-        storages.forEach(storage => storage.node = nodeName)
+        storages.forEach(storage => storage.node = nodename)
 
         return storages
       })
     )
   }
 
-  getNodeVMs(nodeName: string) {
-    this.logger.log(`Getting VM info for node ${nodeName}`)
+  getNodeVMs(id: string, nodename: string) {
+    this.logger.log(`Getting VM info for node ${nodename}`)
 
-    const url = `${this.domain}/nodes/${nodeName}/qemu`
+    const url = `${this.domain}/nodes/${nodename}/qemu`
 
-    return this.get(url)!.pipe(
+    return this.get(url, id)!.pipe(
       map((vms: VirtualMachine[]) => {
         vms.forEach(vm => {
-          vm.node = nodeName
+          vm.node = nodename
           vm.convertedUptime = convertSeconds(vm.uptime)
         })
 
@@ -134,15 +102,15 @@ export class ProxmoxService extends ProxmoxHttp {
     )
   }
 
-  getNodeContainers(nodeName: string) {
-    this.logger.log(`Getting container info for node ${nodeName}`)
+  getNodeContainers(id: string, nodename: string) {
+    this.logger.log(`Getting container info for node ${nodename}`)
 
-    const url = `${this.domain}/nodes/${nodeName}/lxc`
+    const url = `${this.domain}/nodes/${nodename}/lxc`
 
-    return this.get(url)!.pipe(
+    return this.get(url, id)!.pipe(
       map((containers: LXCContainer[]) => {
         containers.forEach(container => {
-          container.node = nodeName
+          container.node = nodename
           container.convertedUptime = convertSeconds(container.uptime)
         })
 

@@ -10,19 +10,14 @@ import { ProxmoxService } from '../proxmox.service';
   styleUrls: ['./running-containers.component.scss'],
 })
 export class RunningContainersComponent implements OnInit {
-  @Input() nodeName: string
-  containers: LXCContainer[] = []
+  @Input() containers: LXCContainer[] = []
   sortAscending = true
   proxmoxService = inject(ProxmoxService)
 
   constructor() { }
 
   ngOnInit() {
-    this.proxmoxService.CONTAINERS.pipe(
-      map(res => res[this.nodeName])
-    ).subscribe(containers => {
-      this.containers = containers ? sorted(containers, 'name') : []
-    })
+    this.containers = this.containers ? sorted(this.containers, 'name') : []
   }
 
   trackContainers(index: number, container: LXCContainer) {

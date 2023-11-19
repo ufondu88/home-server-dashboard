@@ -8,12 +8,12 @@ import { NodeInfo } from 'interfaces/node.interface';
 })
 export class ServerStatsComponent implements OnInit {
   @Input() node: NodeInfo
-  nodeName: string
+  nodename: string
 
-  constructor() {}
-  
-  ngOnInit() {    
-    this.nodeName = this.node.node
+  constructor() { }
+
+  ngOnInit() {
+    this.nodename = this.node.node
   }
 
 }

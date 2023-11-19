@@ -29,7 +29,13 @@ export class ProxmoxService {
   readonly STORAGES: Observable<{ [key: string]: NodeStorage[] }> = this._STORAGES.asObservable();
 
   constructor(private http: HttpClient) {
-    this.getNodeSummaries()
+    // this.getNodeSummaries()
+  }
+
+  getNodeSummariesForIntegration(id: string) {
+    const url = `${this.apiUrl}?id=${id}`
+
+    return this.http.get<NodeInfo[]>(url)
   }
 
   private getNodeSummaries() {
@@ -46,11 +52,11 @@ export class ProxmoxService {
             const storages$: Observable<NodeStorage[]>[] = []
 
             nodes.forEach(node => {
-              const nodeName = node.node
+              const nodename = node.node
 
-              vms$.push(this.getNodeVMs(nodeName))
-              containers$.push(this.getNodeContainers(nodeName))
-              storages$.push(this.getNodeStorage(nodeName))
+              vms$.push(this.getNodeVMs(nodename))
+              containers$.push(this.getNodeContainers(nodename))
+              storages$.push(this.getNodeStorage(nodename))
             })
 
             const vmsForkJoin$ = combineLatest(vms$)
@@ -65,13 +71,19 @@ export class ProxmoxService {
     ).subscribe()
   }
 
-  private getNodeStorage(nodeName: string) {
-    const url = `${this.apiUrl}/node/storage?node=${nodeName}`
+  getNodeStorageForIntegration(id: string, nodename: string) {
+    const url = `${this.apiUrl}/node/storage?id=${id}&node=${nodename}`
+
+    return this.http.get<NodeStorage[]>(url)
+  }
+
+  private getNodeStorage(nodename: string) {
+    const url = `${this.apiUrl}/node/storage?node=${nodename}`
 
     return this.http.get<NodeStorage[]>(url).pipe(
       tap(storages => {
-        if (!(nodeName in this.existingStorages) || !this.objectArraysAreTheSame(this.existingStorages[nodeName], storages)) {
-          this.existingStorages[nodeName] = storages
+        if (!(nodename in this.existingStorages) || !this.objectArraysAreTheSame(this.existingStorages[nodename], storages)) {
+          this.existingStorages[nodename] = storages
 
           this._STORAGES.next(this.existingStorages)
         }
@@ -79,15 +91,21 @@ export class ProxmoxService {
     )
   }
 
-  private getNodeVMs(nodeName: string) {
-    // console.log(`Getting VM info for ${nodeName}`)
+  getNodeVMsForIntegration(id: string, nodename: string) {
+    const url = `${this.apiUrl}/node/vms?id=${id}&node=${nodename}`
 
-    const url = `${this.apiUrl}/node/vms?node=${nodeName}`
+    return this.http.get<VirtualMachine[]>(url)
+  }
+
+  private getNodeVMs(nodename: string) {
+    // console.log(`Getting VM info for ${nodename}`)
+
+    const url = `${this.apiUrl}/node/vms?node=${nodename}`
 
     return this.http.get<VirtualMachine[]>(url).pipe(
       tap(vms => {
-        if (!(nodeName in this.existingVMs) || !this.objectUptimesAreTheSame(this.existingVMs[nodeName], vms)) {
-          this.existingVMs[nodeName] = vms
+        if (!(nodename in this.existingVMs) || !this.objectUptimesAreTheSame(this.existingVMs[nodename], vms)) {
+          this.existingVMs[nodename] = vms
 
           this._VMS.next(this.existingVMs)
         }
@@ -95,15 +113,21 @@ export class ProxmoxService {
     )
   }
 
-  private getNodeContainers(nodeName: string) {
-    // console.log(`Getting container info for ${nodeName}`)
+  getNodeContainersForIntegration(id: string, nodename: string) {
+    const url = `${this.apiUrl}/node/containers?id=${id}&node=${nodename}`
 
-    const url = `${this.apiUrl}/node/containers?node=${nodeName}`
+    return this.http.get<LXCContainer[]>(url)
+  }
+
+  private getNodeContainers(nodename: string) {
+    // console.log(`Getting container info for ${nodename}`)
+
+    const url = `${this.apiUrl}/node/containers?node=${nodename}`
 
     return this.http.get<LXCContainer[]>(url).pipe(
       tap(containers => {
-        if (!(nodeName in this.existingContainers) || !this.objectUptimesAreTheSame(this.existingContainers[nodeName], containers)) {
-          this.existingContainers[nodeName] = containers
+        if (!(nodename in this.existingContainers) || !this.objectUptimesAreTheSame(this.existingContainers[nodename], containers)) {
+          this.existingContainers[nodename] = containers
 
           this._CONTAINERS.next(this.existingContainers)
         }

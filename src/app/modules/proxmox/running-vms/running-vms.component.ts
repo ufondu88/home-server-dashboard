@@ -1,6 +1,5 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { VirtualMachine } from 'interfaces/vm.interface';
-import { map } from 'rxjs';
 import { sorted } from '../../shared/functions/sort.function';
 import { ProxmoxService } from '../proxmox.service';
 
@@ -10,19 +9,14 @@ import { ProxmoxService } from '../proxmox.service';
   styleUrls: ['./running-vms.component.scss'],
 })
 export class RunningVmsComponent implements OnInit {
-  @Input() nodeName: string
-  VMs: VirtualMachine[] = []
+  @Input() VMs: VirtualMachine[] = []
   sortAscending = true
   proxmoxService = inject(ProxmoxService)
 
   constructor() { }
 
   ngOnInit() {
-    this.proxmoxService.VMS.pipe(
-      map(res => res[this.nodeName])
-    ).subscribe(vms => {
-      this.VMs = vms ? sorted(vms, 'name') : []
-    })
+    this.VMs = this.VMs ? sorted(this.VMs, 'name') : []
   }
 
   trackVMs(index: number, vm: VirtualMachine) {
@@ -32,7 +26,7 @@ export class RunningVmsComponent implements OnInit {
   toggleVM(vm: VirtualMachine) {
     const action = vm.status == 'running' ? 'shutdown' : 'start'
 
-    this.proxmoxService.toggleVM(vm.vmid, vm.name, this.nodeName, action)
+    // this.proxmoxService.toggleVM(vm.vmid, vm.name, this.nodename, action)
   }
 
   sort(sortBy: string) {

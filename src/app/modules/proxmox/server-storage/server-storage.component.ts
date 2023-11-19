@@ -10,19 +10,13 @@ import { ProxmoxService } from '../proxmox.service';
   styleUrls: ['./server-storage.component.scss'],
 })
 export class ServerStorageComponent implements OnInit {
-  @Input() nodeName: string
-  storage: NodeStorage[]
+  @Input() storage: NodeStorage[]
   sortAscending = true
   proxmoxService = inject(ProxmoxService)
 
   constructor() { }
 
   ngOnInit() {
-    this.proxmoxService.STORAGES.pipe(
-      map(res => res[this.nodeName])
-    ).subscribe(storage => {
-      this.storage = storage ? sorted(storage, 'storage') : []
-    })
   }
 
   trackStorage(index: number, storage: NodeStorage) {

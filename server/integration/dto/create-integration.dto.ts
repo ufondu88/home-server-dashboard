@@ -8,10 +8,16 @@ export class CreateIntegrationDto {
   name: string;
 
   @IsString()
-  friendly_name?: string;
+  username?: string;
 
   @IsString()
-  url: string;
+  password?: string;
+
+  @IsString()
+  internal_address?: string;
+
+  @IsString()
+  extetnal_ip?: string;
 
   @IsString()
   full_url: string;
@@ -20,5 +26,11 @@ export class CreateIntegrationDto {
   port?: number;
 
   @IsString()
-  token?: string;
+  type?: string;
+
+  auth: any
+
+  cookie?: { ticket: string, CSRFPreventionToken: string, timestamp: number }
+
+  isAlive: boolean
 }

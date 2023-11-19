@@ -6,33 +6,43 @@ export class ProxmoxController {
   constructor(private readonly proxmoxService: ProxmoxService) { }
 
   @Get()
-  findAll() {
-    return this.proxmoxService.getAllNodes();
+  findAll(@Query('id') id: string) {
+    return this.proxmoxService.getAllNodes(id);
   }
 
   @Get('containers')
-  getAllContainers(@Query('node') node: string) {
-    return this.proxmoxService.getAllContainers(node);
+  getAllContainers(@Query() query: { node: string, id: string }) {
+    const { id, node } = query
+
+    return this.proxmoxService.getAllContainers(id, node);
   }
 
   @Get('node/summary')
-  getNodeSummary(@Query('node') node: string) {
-    return this.proxmoxService.getNodeSummary(node);
+  getNodeSummary(@Query() query: { node: string, id: string }) {
+    const { id, node } = query
+
+    return this.proxmoxService.getNodeSummary(id, node);
   }
 
   @Get('node/storage')
-  getNodeStorage(@Query('node') node: string) {
-    return this.proxmoxService.getNodeStorage(node);
+  getNodeStorage(@Query() query: { node: string, id: string }) {
+    const { id, node } = query
+
+    return this.proxmoxService.getNodeStorage(id, node);
   }
 
   @Get('node/containers')
-  getNodeContainers(@Query('node') node: string) {
-    return this.proxmoxService.getNodeContainers(node);
+  getNodeContainers(@Query() query: { node: string, id: string }) {
+    const { id, node } = query
+
+    return this.proxmoxService.getNodeContainers(id, node);
   }
 
   @Get('node/vms')
-  getNodeVMs(@Query('node') node: string) {
-    return this.proxmoxService.getNodeVMs(node);
+  getNodeVMs(@Query() query: { node: string, id: string }) {
+    const { id, node } = query
+
+    return this.proxmoxService.getNodeVMs(id, node);
   }
 
   @Post('node/vm/toggle/:action/:vmid/:vmname/:nodename')

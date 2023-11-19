@@ -1,0 +1,19 @@
+GET http://localhost:3000/api/integration HTTP/1.1
+content-type: application/json
+
+###
+
+POST http://localhost:3000/api/integration HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Proxmox",
+    "username": "API@pve",
+    "password": "HQ4nXZ23s%CE%z",
+    "internal_address": "192.168.86.53",
+    "external_address": "https://proxmox.uzoufondu.duckdns.org",
+    "port": "8006",
+    "type": "proxmox"
+}
+
+###

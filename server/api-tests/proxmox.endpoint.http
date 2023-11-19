@@ -1,0 +1,2 @@
+GET http://localhost:3000/api/proxmox?id=4d69040f-9bcc-485e-8a4b-a1ac7cbd39b7 HTTP/1.1
+content-type: application/json

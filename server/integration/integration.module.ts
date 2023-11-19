@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { IntegrationController } from './dashboard-app.controller';
-import { IntegrationService } from './dashboard-app.service';
+import { IntegrationController } from './integration.controller';
+import { IntegrationService } from './integration.service';
 
 @Module({
   controllers: [IntegrationController],
