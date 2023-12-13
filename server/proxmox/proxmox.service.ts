@@ -1,16 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Observable, catchError, map, of, retry, tap } from 'rxjs';
+import { ProxmoxHttp } from './classes/proxmox-http.class';
+import { ProxmoxHttpService } from './proxmox-http-service.service';
 import { LXCContainer } from 'interfaces/container.interface';
 import { NodeStorage } from 'interfaces/node-storage.interface';
 import { NodeInfo } from 'interfaces/node.interface';
-import { Time } from 'interfaces/time.interface';
 import { VirtualMachine } from 'interfaces/vm.interface';
-import { map, tap } from 'rxjs';
-import { ProxmoxHttp } from './classes/proxmox-http.class';
-import { ProxmoxHttpService } from './proxmox-http-service.service';
+import { Time } from 'interfaces/time.interface';
 
 @Injectable()
 export class ProxmoxService extends ProxmoxHttp {
   private logger = new Logger('ProxmoxService')
+
 
   domain = "https://192.168.86.53:8006/api2/json"
 
@@ -22,12 +23,12 @@ export class ProxmoxService extends ProxmoxHttp {
     super(http)
   }
 
-  getAllContainers(id: string, nodename: string) {
+  getAllContainers(id: string, nodename: string): Observable<LXCContainer[]> {
     this.logger.log(`Getting all containers for node ${nodename}`)
 
     const url = `${this.domain}/nodes/${nodename}/lxc`
 
-    return this.get(url, id)!.pipe(
+    return this.get(url, id).pipe(
       tap((containers: LXCContainer[]) => this.containers = containers)
     )
   }
@@ -37,7 +38,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodename}/qemu`
 
-    return this.get(url, id)!.pipe(
+    return this.get(url, id).pipe(
       tap((vms: VirtualMachine[]) => this.vms = vms),
       map(vms => {
         vms.forEach(vm => vm.node = nodename)
@@ -52,14 +53,20 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes`
 
-    return this.get(url, id)!.pipe(
+    return this.get(url, id).pipe(
       map((nodes: NodeInfo[]) => {
-        nodes.forEach(node => {
-          node.cpu = +(node.cpu * 100).toFixed(2)
-        })
-
-        return nodes
-      })
+        if (nodes) {
+          nodes.forEach(node => {
+            node.cpu = +(node.cpu * 100).toFixed(2)
+          })
+          return nodes
+        }
+      }),
+      retry(2),
+      catchError(res => {
+        this.logger.error(res)
+        return of({ message: res.message, status: 500 })
+      }),
     );
   }
 
@@ -68,7 +75,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodename}`
 
-    return this.get(url, id)!
+    return this.get(url, id)
   }
 
   getNodeStorage(id: string, nodename: string) {
@@ -76,7 +83,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodename}/storage`
 
-    return this.get(url, id)!.pipe(
+    return this.get(url, id).pipe(
       map((storages: NodeStorage[]) => {
         storages.forEach(storage => storage.node = nodename)
 
@@ -90,7 +97,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodename}/qemu`
 
-    return this.get(url, id)!.pipe(
+    return this.get(url, id).pipe(
       map((vms: VirtualMachine[]) => {
         vms.forEach(vm => {
           vm.node = nodename
@@ -107,7 +114,7 @@ export class ProxmoxService extends ProxmoxHttp {
 
     const url = `${this.domain}/nodes/${nodename}/lxc`
 
-    return this.get(url, id)!.pipe(
+    return this.get(url, id).pipe(
       map((containers: LXCContainer[]) => {
         containers.forEach(container => {
           container.node = nodename
@@ -136,22 +143,22 @@ export class ProxmoxService extends ProxmoxHttp {
     const hours = Math.floor((seconds % (24 * 3600)) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-  
+
     const time: Time = {
       days,
       hours,
       minutes,
       seconds: remainingSeconds
     }
-  
+
     return this.formatUptime(time, format);
   }
-  
+
   formatUptime(time: Time, type: string) {
     const { days, hours, minutes, seconds } = time;
-  
+
     const formatValue = (value: number, unit: string) => `${value} ${value === 1 ? unit : unit + 's'}`;
-  
+
     switch (type) {
       case 'full':
         if (days == 0) {
@@ -167,7 +174,7 @@ export class ProxmoxService extends ProxmoxHttp {
         } else {
           return `${formatValue(days, 'day')} ${formatValue(hours, 'hour')} ${formatValue(minutes, 'minute')} and ${formatValue(seconds, 'second')}`
         }
-  
+
       case 'vm':
         if (days == 0) {
           if (hours == 0) {

@@ -29,22 +29,26 @@
         </ion-modal>
       </div>
     </div>
-    <div *ngFor="let app of allApps" class="row">
+    <div class="row">
+      <!-- <ion-card *ngFor="let app of regularApps" class="app" (click)="goToApp(app.full_url!)">
+        <img *ngIf="app.icon" [src]="getIconUrl(app.icon)" />
+
+        <ion-card-header>
+          <ion-card-title>{{app.name}} {{app.isAlive ? '🟢' : '🔴'}}</ion-card-title>
+        </ion-card-header>
+      </ion-card> -->
+      <ion-card *ngFor="let app of regularApps" class="app" (click)="goToApp(app.full_url!)">
+        <img *ngIf="app.icon" [src]="getIconUrl(app.icon)" />
+
+        <ion-card-header>
+          <ion-card-title>{{app.name}} {{app.isAlive ? '🟢' : '🔴'}}</ion-card-title>
+        </ion-card-header>
+      </ion-card>
+    </div>
+
+    <div *ngFor="let app of specialApps" class="row">
       <div [ngSwitch]="app.type">
         <app-proxmox *ngSwitchCase="'proxmox'" [app]="app"></app-proxmox>
-
-        <div *ngSwitchDefault class="col-sm-12 col-md-4">
-          <ion-card class="app" (click)="goToApp(app.full_url!)">
-            <img *ngIf="app.icon" [src]="getIconUrl(app.icon)" />
-
-            <ion-card-header>
-              <ion-card-title>{{app.name}} {{app.isAlive ? '🟢' : '🔴'}}</ion-card-title>
-            </ion-card-header>
-    
-            <ion-card-content>
-            </ion-card-content>
-          </ion-card>
-        </div>
       </div>
     </div>
 

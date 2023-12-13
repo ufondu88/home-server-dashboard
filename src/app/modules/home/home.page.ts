@@ -17,6 +17,8 @@ export class HomePage {
   serviceForm: FormGroup;
   formOpen = false;
   allApps: Integration[] = []
+  regularApps: Integration[] = []
+  specialApps: Integration[] = []
   selectedSegment = 'custom'
 
   constructor(
@@ -25,7 +27,29 @@ export class HomePage {
   ) { }
 
   ngOnInit() {
-    this.integrationService.ALL_APPS.subscribe(res => this.allApps = res)
+    this.integrationService.ALL_APPS.subscribe(integrations => {
+      this.specialApps = integrations.filter(app => 'type' in app)
+      this.regularApps = integrations.filter(app => !('type' in app))
+    })
+  }
+
+  private sortedApps(apps: typeof this.allApps) {
+    return apps.sort((appA, appB) => {
+      // Check if the "type" property is present
+      const hasTypeA = 'type' in appA;
+      const hasTypeB = 'type' in appB;
+
+      // Compare based on the presence of "type" property
+      if (hasTypeA && !hasTypeB) {
+        return 1; // appA comes after appB
+      } else if (!hasTypeA && hasTypeB) {
+        return -1; // appA comes before appB
+      } else {
+        // Both objects either have or don't have "type" property
+        // Sort by name if both have "type" or both don't have "type"
+        return appA.name.localeCompare(appB.name);
+      }
+    });
   }
 
   async openFormModal() {

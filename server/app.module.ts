@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProxmoxModule } from './proxmox/proxmox.module';
 import { IntegrationModule } from './integration/integration.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import { IntegrationModule } from './integration/integration.module';
     }),
     AppModule,
     IntegrationModule,
-    ProxmoxModule
+    ProxmoxModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService],

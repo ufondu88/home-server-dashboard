@@ -4,7 +4,7 @@ import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 import { CreateIntegrationDto } from './dto/create-integration.dto';
 import { UpdateIntegrationDto } from './dto/update-integration.dto';
-import * as ping from 'ping'
+import * as net from 'net';
 
 @Injectable()
 export class IntegrationService {
@@ -26,7 +26,7 @@ export class IntegrationService {
 
     this.createAuthFile(integration)
 
-    const currentApps = await this.findAll()
+    const currentApps = await this.findAll(true)
 
     currentApps.push(integration)
 
@@ -59,7 +59,7 @@ export class IntegrationService {
     }
   }
 
-  async findAll(): Promise<Omit<CreateIntegrationDto, 'username' | 'password' | 'auth' | 'cookie'>[]> {
+  async findAll(creatingIntegration = false): Promise<CreateIntegrationDto[]> {
     const filePath = path.join(this.dashboardDataDir, 'apps.json');
 
     try {
@@ -70,17 +70,19 @@ export class IntegrationService {
         const allApps = JSON.parse(rawData) as CreateIntegrationDto[]
 
         for (const app of allApps) {
-          const response = await ping.promise.probe(app.internal_address || "")
+          // const response = await ping.promise.probe(app.internal_address || "")
+          app.isAlive = await this.isAlive(app.internal_address || "", app.port || 0)
 
-          app.isAlive = response.alive
-          delete app.auth
-          delete app.cookie
+          if (!creatingIntegration) {
+            delete app.auth
+            delete app.cookie
+          }
         }
 
-        return allApps as Omit<CreateIntegrationDto, 'username' | 'password' | 'auth' | 'cookie'>[];
+        return allApps;
       } else {
         // If it doesn't exist, create an empty array and save it to the file
-        const emptyData: any[] = [];
+        const emptyData: CreateIntegrationDto[] = [];
         await fs.writeJSON(filePath, emptyData);
         return emptyData;
       }
@@ -88,6 +90,27 @@ export class IntegrationService {
       this.logger.error('Error reading or creating the JSON file:', error);
       throw error;
     }
+  }
+
+  async isAlive(host: string, port: number): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      const socket = net.createConnection(port, host);
+      socket.setTimeout(1000); // Set a timeout to handle unresponsive servers
+
+      socket.on('connect', () => {
+        socket.end();
+        resolve(true);
+      });
+
+      socket.on('timeout', () => {
+        socket.destroy();
+        resolve(false);
+      });
+
+      socket.on('error', () => {
+        resolve(false);
+      });
+    });
   }
 
   private async overwriteData(newData: any): Promise<void> {

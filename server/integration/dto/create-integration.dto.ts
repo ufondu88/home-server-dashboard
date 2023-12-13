@@ -17,6 +17,9 @@ export class CreateIntegrationDto {
   internal_address?: string;
 
   @IsString()
+  icon?: string;
+
+  @IsString()
   extetnal_ip?: string;
 
   @IsString()

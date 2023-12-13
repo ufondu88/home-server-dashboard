@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import * as https from 'https';
 import * as mkdirp from 'mkdirp';
 import * as path from 'path';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { APPS_FILE, DASHBOARD_DATA_DIR, DATA_DIR, EXPIRATION_TIME } from '../constants';
 import { CreateIntegrationDto } from 'server/integration/dto/create-integration.dto';
 
@@ -12,11 +12,7 @@ import { CreateIntegrationDto } from 'server/integration/dto/create-integration.
 export class ProxmoxHttpService {
   private logger = new Logger('ProxmoxHttpService')
 
-  private domain = "https://192.168.86.53:8006/api2/json"
-  private proxmoxHeaders: any;
-  private proxmoxCookie: string;
-  private proxmoxToken: string;
-  private cookieTimestamp = 0;
+  private domain = "http://192.168.86.53:8006/api2/json"
 
   private config = {
     headers: {
@@ -30,16 +26,21 @@ export class ProxmoxHttpService {
   constructor(private httpService: HttpService) { }
 
   request(method: string, url: string, id: string, data?: any) {
-    this.renewProxmoxCredsIfExpired(id);
-
-    return this.httpService.request({
-      method,
-      url,
-      data,
-      headers: this.proxmoxHeaders,
-    }).pipe(
+    return this.renewProxmoxCredsIfExpired(id).pipe(
+      switchMap(res => {
+        return this.httpService.request({
+          method,
+          url,
+          data,
+          headers: res.headers,
+          httpsAgent: res.httpsAgent
+        })
+      })
+    ).pipe(
       map(res => res['data']['data']),
-      catchError(res => of({ message: res.message, status: res.status })),
+      catchError(res => {
+        throw new Error(res.message);
+      }),
     );
   }
 
@@ -50,46 +51,41 @@ export class ProxmoxHttpService {
 
     if (!ticket || !CSRFPreventionToken || !timestamp) {
       this.logger.log('No cookie information. Getting cookie from the server');
-      this.getProxmoxCredsFromServer(id).subscribe();
-    } else {
-      this.proxmoxCookie = cookie.ticket;
-      this.proxmoxToken = cookie.CSRFPreventionToken;
-      this.cookieTimestamp = cookie.timestamp;
+
+      return this.getProxmoxCredsFromServer(id)
     }
 
-    this.proxmoxHeaders = {
+    this.logger.log('Cookies! Yum')
+
+    if (Date.now() >= timestamp + EXPIRATION_TIME) {
+      this.logger.log('Cookie expired. Renewing cookie from the server');
+
+      return this.getProxmoxCredsFromServer(id);
+    }
+
+    return of({
       headers: {
-        Cookie: `PVEAuthCookie=${this.proxmoxCookie}`,
-        CSRFPreventionToken: this.proxmoxToken,
+        Cookie: `PVEAuthCookie=${ticket}`,
+        CSRFPreventionToken: CSRFPreventionToken,
       },
       httpsAgent: new https.Agent({
         rejectUnauthorized: false,
       }),
-    };
-
-    if (Date.now() >= this.cookieTimestamp + EXPIRATION_TIME) {
-      this.logger.log('Cookie expired. Renewing cookie from the server');
-      this.getProxmoxCredsFromServer(id).subscribe();
-    }
+    })
   }
 
   private getLocalProxmox(id: string) {
     const ALL_APPS: CreateIntegrationDto[] = this.readJSONFile(APPS_FILE)
 
-    const proxmox = ALL_APPS.filter(app => app.id == id)[0]
+    const proxmox = ALL_APPS.find(app => app.id == id)
 
     return proxmox
   }
 
-  private getLocalProxmoxCookie(id: string) {
+  private getLocalProxmoxCookie(id: string): { ticket: string, CSRFPreventionToken: string, timestamp: number } {
     const proxmox = this.getLocalProxmox(id)
 
-    if (proxmox && proxmox.cookie) {
-      return proxmox.cookie as { ticket: string, CSRFPreventionToken: string, timestamp: number };
-    } else {
-      // Handle the case where proxmox or proxmox.cookie is undefined
-      throw new Error(`Proxmox cookie not found for id: ${id}`);
-    }
+    return proxmox && proxmox.cookie ? proxmox.cookie : {} as { ticket: string, CSRFPreventionToken: string, timestamp: number }
   }
 
   private updateLocalProxmox(id: string, data: any) {
@@ -124,7 +120,7 @@ export class ProxmoxHttpService {
   private getUserCreds(id: string): { username: string, password: string } {
     this.logger.log('Getting user credentials')
 
-    const proxmox = this.getLocalProxmox(id)
+    const proxmox = this.getLocalProxmox(id) || {} as CreateIntegrationDto 
 
     return proxmox.auth
   }
@@ -157,27 +153,25 @@ export class ProxmoxHttpService {
         tap(res => {
           this.logger.log('Credentials renewed from the server successfully!');
 
-          this.proxmoxCookie = res['ticket'];
-          this.proxmoxToken = res['CSRFPreventionToken'];
-          this.cookieTimestamp = Date.now();
+          const ticket = res['ticket'];
+          const CSRFPreventionToken = res['CSRFPreventionToken'];
+          const timestamp = Date.now();
 
-          const cookieData = {
-            ticket: this.proxmoxCookie,
-            CSRFPreventionToken: this.proxmoxToken,
-            timestamp: this.cookieTimestamp,
-          };
+          const cookieData = { ticket, CSRFPreventionToken, timestamp };
 
           this.updateLocalProxmox(id, cookieData);
-
-          this.proxmoxHeaders = {
+        }),
+        map(res => {
+          return {
             headers: {
-              Cookie: `PVEAuthCookie=${this.proxmoxCookie}`,
+              Cookie: `PVEAuthCookie=${res['ticket']}`,
+              CSRFPreventionToken: res['CSRFPreventionToken'],
             },
             httpsAgent: new https.Agent({
               rejectUnauthorized: false,
             }),
-          };
-        }),
+          }
+        })
       )
   }
 }
