@@ -2,23 +2,26 @@
   width: 100%;
 }
 
-#storage-container {
+.storage-container {
   display: flex;
+  flex-direction: column;
   margin-bottom: 8px;
-  align-items: center;
 
-  .storage-name {
-    width: 25%;
+  .storage-name-container{
+    display: flex;
+    justify-content: space-between;
+
+    .storage-name {
+      width: 25%;
+    }
+  
+    .storage-used {
+      font-size: 14pt;
+    }
   }
 
-  .storage-used {
-    width: 10%;
-    font-size: 14pt;
-  }
 
   app-progress-bar {
-    width: 60%;
-    margin-right: 10px;
     height: 100%;
   }
 }

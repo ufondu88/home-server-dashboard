@@ -9,7 +9,6 @@
     <tr *ngFor="let vm of VMs; trackBy: trackVMs">
       <td>{{vm.maxdisk | convertBytes}}</td>
       <td>{{vm.name}}</td>
-      <!-- <td>{{vm.uptime | convertSeconds:'vm'}}</td> -->
       <td>{{vm.convertedUptime}}</td>
       <td class="status">
         <span [style.color]="vm.status == 'running' ? '#74BF6B' : '#D34039'">{{vm.status}}</span>

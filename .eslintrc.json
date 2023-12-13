@@ -42,5 +42,9 @@
       "extends": ["plugin:@angular-eslint/template/recommended"],
       "rules": {}
     }
-  ]
+  ],
+  "env": {
+    "node": true,
+    "jest": true
+  },
 }

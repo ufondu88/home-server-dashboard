@@ -2,10 +2,10 @@ import { Component, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { IonModal, ModalController } from '@ionic/angular';
 import { Integration } from 'interfaces/integration.interface';
-import { NodeInfo } from 'interfaces/node.interface';
-import { ProxmoxService } from '../proxmox/proxmox.service';
 import { IntegrationService } from './integration.service';
 import { IntegrationFormModalComponent } from './modals/dashboard-app-form-modal/dashboard-app-form-modal.component';
+import { map, shareReplay } from 'rxjs';
+import { API_URL } from 'src/constants';
 
 @Component({
   selector: 'app-home',
@@ -20,12 +20,12 @@ export class HomePage {
   selectedSegment = 'custom'
 
   constructor(
-    private dashboarAppService: IntegrationService,
+    private integrationService: IntegrationService,
     public modalController: ModalController
   ) { }
 
   ngOnInit() {
-    this.dashboarAppService.ALL_APPS.subscribe(res => this.allApps = res)
+    this.integrationService.ALL_APPS.subscribe(res => this.allApps = res)
   }
 
   async openFormModal() {
@@ -39,10 +39,14 @@ export class HomePage {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm') {
-      return this.dashboarAppService.create(data)
+      return this.integrationService.create(data)
     }
 
     return
+  }
+
+  getIconUrl(filename: string) {   
+    return `${API_URL}/image/${filename}`
   }
 
   goToApp(url: string) {

@@ -1,11 +1,34 @@
-<div class="card-container">
-  <app-card [title]="'Server CPU'">
-    <div class="stat-container">
-      <h1 [style.color]="node.cpu < 30 ? '#74BF6B': node.cpu < 70 ? '#DAB01B' : '#D34039'" [style.font-weight]="'bold'">
-        {{node.cpu}} %
-      </h1>
+<app-card [title]="'Server Summary'">
+  <div id="summary-container">
+    <div class="summary">
+      <div class="summary-name-container">
+        <span class="summary-name">CPU usage</span>
+        <span>{{node.cpu}}% of {{node.maxcpu}} CPU(s)</span>
+        <span [style.color]="getItemColor(node.cpu, false)" class="summary-used">{{node.cpu}}%</span>
+      </div>
+      <app-progress-bar 
+        [value]="node.cpu / 100" 
+        [backgroundColor]="getItemColor(node.cpu, false)"
+        [containerHeight]="'8px'"
+        >
+      </app-progress-bar>
     </div>
-  </app-card>
+  
+    <div class="summary">
+      <div class="summary-name-container">
+        <span class="summary-name">RAM usage</span>
+        <span>{{node.mem | convertBytes}} of {{node.maxmem | convertBytes}}</span>
+        <span [style.color]="getItemColor(node.mem / node.maxmem)" class="summary-used">{{((node.mem / node.maxmem) * 100).toFixed(2)}}%</span>
+      </div>
+      <app-progress-bar 
+        [value]="node.mem / node.maxmem" 
+        [backgroundColor]="getItemColor(node.mem / node.maxmem)"
+        [containerHeight]="'8px'">
+      </app-progress-bar>
+    </div>
+  </div>
+</app-card>
+<!-- <div class="card-container">
   
   <app-card id="ram-usage-click-trigger" [title]="'RAM Usage'">
     <div class="stat-container">
@@ -43,4 +66,4 @@
       </ion-content>
     </ng-template>
   </ion-popover>
-</div>
+</div> -->

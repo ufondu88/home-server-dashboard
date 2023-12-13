@@ -34,13 +34,14 @@
         <app-proxmox *ngSwitchCase="'proxmox'" [app]="app"></app-proxmox>
 
         <div *ngSwitchDefault class="col-sm-12 col-md-4">
-          <ion-card>
+          <ion-card class="app" (click)="goToApp(app.full_url!)">
+            <img *ngIf="app.icon" [src]="getIconUrl(app.icon)" />
+
             <ion-card-header>
-              <ion-card-title (click)="goToApp(app.full_url!)">{{app.name}}</ion-card-title>
+              <ion-card-title>{{app.name}} {{app.isAlive ? '🟢' : '🔴'}}</ion-card-title>
             </ion-card-header>
     
             <ion-card-content>
-              Here's a small text description for the card content. Nothing more, nothing less.
             </ion-card-content>
           </ion-card>
         </div>

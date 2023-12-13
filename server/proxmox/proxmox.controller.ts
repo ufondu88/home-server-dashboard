@@ -1,52 +1,53 @@
 import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ProxmoxService } from './proxmox.service';
+import { Observable } from 'rxjs';
 
 @Controller('proxmox')
 export class ProxmoxController {
   constructor(private readonly proxmoxService: ProxmoxService) { }
 
   @Get()
-  findAll(@Query('id') id: string) {
+  findAll(@Query('id') id: string): Observable<any> {
     return this.proxmoxService.getAllNodes(id);
   }
 
   @Get('containers')
-  getAllContainers(@Query() query: { node: string, id: string }) {
+  getAllContainers(@Query() query: { node: string, id: string }): Observable<any> {
     const { id, node } = query
 
     return this.proxmoxService.getAllContainers(id, node);
   }
 
   @Get('node/summary')
-  getNodeSummary(@Query() query: { node: string, id: string }) {
+  getNodeSummary(@Query() query: { node: string, id: string }): Observable<any> {
     const { id, node } = query
 
     return this.proxmoxService.getNodeSummary(id, node);
   }
 
   @Get('node/storage')
-  getNodeStorage(@Query() query: { node: string, id: string }) {
+  getNodeStorage(@Query() query: { node: string, id: string }): Observable<any> {
     const { id, node } = query
 
     return this.proxmoxService.getNodeStorage(id, node);
   }
 
   @Get('node/containers')
-  getNodeContainers(@Query() query: { node: string, id: string }) {
+  getNodeContainers(@Query() query: { node: string, id: string }): Observable<any> {
     const { id, node } = query
 
     return this.proxmoxService.getNodeContainers(id, node);
   }
 
   @Get('node/vms')
-  getNodeVMs(@Query() query: { node: string, id: string }) {
+  getNodeVMs(@Query() query: { node: string, id: string }): Observable<any> {
     const { id, node } = query
 
     return this.proxmoxService.getNodeVMs(id, node);
   }
 
   @Post('node/vm/toggle/:action/:vmid/:vmname/:nodename')
-  toggleVM(@Param() params: { action: string, vmid: string, vmname: string, nodename: string }) {
+  toggleVM(@Param() params: { action: string, vmid: string, vmname: string, nodename: string }): Observable<any> {
     const { action, nodename, vmid, vmname } = params
 
     return this.proxmoxService.toggleVM(vmid, vmname, nodename, action);

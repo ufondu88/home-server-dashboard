@@ -2,8 +2,12 @@
   <table>
     <tr>
       <th>
-       Allocated Disk Space
+       Total Disk Space
         <ion-icon name="funnel-outline"></ion-icon></th>
+      <th>
+        Remaining Disk Space
+        <ion-icon name="funnel-outline"></ion-icon>
+      </th>
       <th>
        VM
         <ion-icon name="funnel-outline"></ion-icon></th>
@@ -13,6 +17,7 @@
     </tr>
     <tr *ngFor="let container of containers; trackBy:trackContainers">
       <td>{{container.maxdisk | convertBytes}}</td>
+      <td>{{container.disk | convertBytes}}</td>
       <td>{{container.name}}</td>
       <!-- <td>{{container.uptime | convertSeconds:'vm'}}</td> -->
       <td>{{container.convertedUptime}}</td>

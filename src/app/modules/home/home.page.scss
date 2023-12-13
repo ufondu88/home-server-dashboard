@@ -32,11 +32,16 @@
 
 ion-card {
   border-radius: 15px;
-}
 
-ion-card-title:hover {
-  font-weight: bold;
-  cursor: pointer;
+  &.app {
+    width: fit-content;
+    transition: border 0.3s ease;
+
+    &:hover {
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.411);
+    }
+  }
 }
 
 ion-modal {

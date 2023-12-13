@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Integration } from 'interfaces/integration.interface';
 import { BehaviorSubject, Observable, interval, startWith, switchMap, tap } from 'rxjs';
-import { INTEGRATION_API_URL, objectArraysAreTheSame } from 'src/constants';
+import { ICON_API_URL, INTEGRATION_API_URL, objectArraysAreTheSame } from 'src/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,17 @@ export class IntegrationService {
     this.getAll()
   }
 
+  uploadIcon(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);    
+
+    return this.http.post<{filename: string}>(ICON_API_URL, formData);
+  }
+
+  getIcon(filename: string) {
+    return this.http.get(`${ICON_API_URL }/${filename}`, { responseType: 'blob' });
+  }
+
   create(integration: Integration) {
     return this.http.post(INTEGRATION_API_URL, integration).pipe(
       tap(() => this.getAll())
@@ -27,11 +38,7 @@ export class IntegrationService {
   getAll() {
     interval(5000).pipe(
       startWith(0),
-      switchMap(() => {
-        console.log("Getting all apps")
-        return this.http.get<Integration[]>(INTEGRATION_API_URL).pipe(
-        )
-      })
+      switchMap(() => this.http.get<Integration[]>(INTEGRATION_API_URL))
     ).subscribe(apps => {
       if (!objectArraysAreTheSame(apps, this.existingApps)) {
         this.existingApps = apps

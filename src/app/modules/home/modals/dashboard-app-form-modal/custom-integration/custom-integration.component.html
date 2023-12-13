@@ -19,5 +19,9 @@
     <ion-input label="Token" position="floating" formControlName="token"></ion-input>
   </ion-item>
 
+  <ion-item>
+    <ion-input type="file" label="Icon" position="floating" (change)="onFileSelected($event)"></ion-input>
+  </ion-item>
+
   <ion-button expand="full" type="submit">Submit</ion-button>
 </form>

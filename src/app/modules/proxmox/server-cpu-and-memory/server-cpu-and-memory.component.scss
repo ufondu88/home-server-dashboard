@@ -1,34 +1,23 @@
-.card-container {
-  display: flex;
-  height: 100%;
-
-  app-card {
-    margin-right: 5px;
-    transition: box-shadow 0.3s ease;
-    transition: scale 0.3s ease;
-
-    &:hover {
-      scale: 1.05;
-    }
-
-    .stat-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-  }
+#summary-container {
+  width: 100%;
   
-  .top-card {
-    height: fit-content;
-    margin-bottom: 2px;
-  }
-
-  .bottom-card {
-    height: fit-content;
-    margin-top: 2px;
-  }
-
-  .merge-row {
-    grid-row: 1 / span 2;
+  .summary {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+  
+    .summary-name-container {
+      display: flex;
+      justify-content: space-between;
+  
+      .summary-used {
+        font-size: 14pt;
+      }
+    }
+    
+    app-progress-bar {
+      height: 100%;
+    }
   }
 }

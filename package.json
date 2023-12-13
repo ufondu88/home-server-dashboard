@@ -9,12 +9,16 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:backend": "jest",
+    "test:watch:backend": "jest --watch",
+    "test:cov:backend": "jest --coverage",
     "lint": "ng lint",
     "dev:ssr": "ng run app:serve-ssr",
     "serve:ssr": "node dist/app/server/main.js",
     "build:ssr": "ng build && ng run app:server",
     "prerender": "ng run app:prerender",
-    "prebuild:ssr": "ngcc"
+    "prebuild:ssr": "ngcc",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "private": true,
   "dependencies": {
@@ -40,6 +44,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/ng-universal": "^8.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/testing": "^10.2.10",
     "@nguniversal/express-engine": "^16.2.0",
     "@types/ping": "^0.4.4",
     "class-transformer": "^0.5.1",
@@ -70,6 +75,10 @@
     "@nguniversal/builders": "^16.2.0",
     "@types/express": "^4.17.0",
     "@types/jasmine": "~4.3.0",
+    "@types/jest": "^29.5.2",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "5.3.0",
     "@typescript-eslint/parser": "5.3.0",
@@ -85,8 +94,26 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
+    "supertest": "^6.3.3",
     "ts-node": "^8.3.0",
     "typescript": "~5.0.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
   },
   "description": "An Ionic project"
 }
